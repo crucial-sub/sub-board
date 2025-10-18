@@ -49,7 +49,7 @@ model Session {
 ## DTO & Response 설계
 - `RegisterDto`: `loginId`, `nickname`, `password`
 - `LoginDto`: `loginId`, `password`
-- `AuthTokens`: `{ accessToken: string; refreshToken: string; expiresIn: number; }`
+- `AuthTokens`: `{ accessToken: string; refreshToken: string; accessTokenExpiresIn: number; refreshTokenExpiresIn: number; }`
 - `AuthPayload`: JWT payload는 최소 `{ sub: userId, loginId }`, 추후 권한 정보 추가 가능
 - 전역 ValidationPipe에 `whitelist: true`, `forbidNonWhitelisted: true` 옵션 적용 예정
 
@@ -84,8 +84,8 @@ model Session {
 - e2e 테스트: `supertest`로 `/auth/register`, `/auth/login` 흐름 검증, test schema에 대해 migrate
 
 ## 마이그레이션 계획
-1. `Session` 모델을 Prisma schema에 추가
-2. `pnpm --filter api db:migrate dev --name add-session-table`
+1. `Session` 모델을 Prisma schema에 추가 (완료)
+2. 개발 DB를 `prisma migrate reset --schema apps/api/prisma/schema.prisma`로 초기화한 뒤, `prisma migrate dev --schema apps/api/prisma/schema.prisma --name init`으로 첫 마이그레이션을 생성
 3. 이후 User 속성 확장(예: `role`, `avatarUrl`)마다 별도 마이그레이션 생성
 4. 테스트 환경 분리를 위해 `.env.test`에서 `DATABASE_URL`을 test DB로 지정 → GitHub Actions 등 CI에서 `prisma migrate deploy`
 
