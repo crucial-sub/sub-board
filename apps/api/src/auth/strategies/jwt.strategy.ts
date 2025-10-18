@@ -1,5 +1,6 @@
 // JWT 액세스 토큰을 검증하는 Passport 전략
 import { Injectable } from "@nestjs/common";
+import { Request } from "express";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
@@ -13,8 +14,9 @@ type JwtPayload = {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     const secret = configService.get<string>("JWT_ACCESS_SECRET") ?? "test-access-secret";
+    const cookieExtractor = (request: Request) => request?.cookies?.sb_access_token || null;
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor, ExtractJwt.fromAuthHeaderAsBearerToken()]),
       ignoreExpiration: false,
       secretOrKey: secret,
     });

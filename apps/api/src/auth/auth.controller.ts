@@ -1,9 +1,12 @@
 // 인증 관련 HTTP 엔드포인트를 제공하는 컨트롤러
-import { Body, Controller, HttpCode, HttpStatus, Post, Req } from "@nestjs/common";
-import { Request } from "express";
-import { AuthService, AuthResult } from "./auth.service";
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Request, Response } from "express";
+import { AuthService, AuthResult, AuthTokens } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
+import { JwtAuthGuard } from "./guards/jwt-auth.guard";
+import { CurrentUser } from "../common/decorators/current-user.decorator";
 import { RegisterDto } from "./dto/register.dto";
+import { ConfigService } from "@nestjs/config";
 
 type SessionMetadata = {
   userAgent?: string | null;
@@ -12,17 +15,81 @@ type SessionMetadata = {
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  private readonly isProduction: boolean;
+
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {
+    this.isProduction = this.configService.get<string>("NODE_ENV") === "production";
+  }
 
   @Post("register")
-  register(@Body() dto: RegisterDto, @Req() request: Request): Promise<AuthResult> {
-    return this.authService.register(dto, this.extractSessionMetadata(request));
+  async register(
+    @Body() dto: RegisterDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResult> {
+    const result = await this.authService.register(dto, this.extractSessionMetadata(request));
+    this.setAuthCookies(response, result.tokens);
+    return result;
   }
 
   @Post("login")
   @HttpCode(HttpStatus.OK)
-  login(@Body() dto: LoginDto, @Req() request: Request): Promise<AuthResult> {
-    return this.authService.login(dto, this.extractSessionMetadata(request));
+  async login(
+    @Body() dto: LoginDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResult> {
+    const result = await this.authService.login(dto, this.extractSessionMetadata(request));
+    this.setAuthCookies(response, result.tokens);
+    return result;
+  }
+
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response): Promise<AuthResult> {
+    const cookies = (request as Request & { cookies?: Record<string, string> }).cookies ?? {};
+    const refreshToken = cookies.sb_refresh_token;
+    if (!refreshToken) {
+      throw new UnauthorizedException("리프레시 토큰이 없습니다.");
+    }
+    const result = await this.authService.refreshTokens(refreshToken, this.extractSessionMetadata(request));
+    this.setAuthCookies(response, result.tokens);
+    return result;
+  }
+
+  @Post("logout")
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@CurrentUser() user: { userId: string }, @Res({ passthrough: true }) response: Response) {
+    await this.authService.logout(user.userId);
+    this.clearAuthCookies(response);
+    return { success: true };
+  }
+
+  private setAuthCookies(response: Response, tokens: AuthTokens) {
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: "lax" as const,
+      secure: this.isProduction,
+      path: "/",
+    };
+
+    response.cookie("sb_access_token", tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: tokens.accessTokenExpiresIn * 1000,
+    });
+    response.cookie("sb_refresh_token", tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: tokens.refreshTokenExpiresIn * 1000,
+    });
+  }
+
+  private clearAuthCookies(response: Response) {
+    response.clearCookie("sb_access_token", { path: "/" });
+    response.clearCookie("sb_refresh_token", { path: "/" });
   }
 
   private extractSessionMetadata(request: Request): SessionMetadata {

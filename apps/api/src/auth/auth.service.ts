@@ -80,6 +80,47 @@ export class AuthService {
     return { user: publicUser, tokens };
   }
 
+  async refreshTokens(refreshToken: string, metadata: SessionMetadata): Promise<AuthResult> {
+    let payload: { sub: string };
+    try {
+      payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.refreshSecret,
+      });
+    } catch (error) {
+      throw new UnauthorizedException("리프레시 토큰이 유효하지 않습니다.");
+    }
+
+    const user = await this.usersService.findById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException("사용자를 찾을 수 없습니다.");
+    }
+
+    const session = await this.findMatchingSession(payload.sub, refreshToken);
+    if (!session || session.expiresAt.getTime() < Date.now()) {
+      throw new UnauthorizedException("리프레시 토큰이 만료되었거나 유효하지 않습니다.");
+    }
+
+    await this.prisma.session.delete({ where: { id: session.id } });
+
+    const tokens = await this.issueTokens(user, metadata);
+    return { user, tokens };
+  }
+
+  async logout(userId: string): Promise<void> {
+    await this.prisma.session.deleteMany({ where: { userId } });
+  }
+
+  private async findMatchingSession(userId: string, refreshToken: string) {
+    const sessions = await this.prisma.session.findMany({ where: { userId } });
+    for (const session of sessions) {
+      const matches = await argon2.verify(session.refreshToken, refreshToken).catch(() => false);
+      if (matches) {
+        return session;
+      }
+    }
+    return null;
+  }
+
   private async issueTokens(user: PublicUser, metadata: SessionMetadata): Promise<AuthTokens> {
     const payload = { sub: user.id, loginId: user.loginId };
 

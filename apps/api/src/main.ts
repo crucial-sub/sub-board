@@ -3,10 +3,12 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
   // Nest 앱 인스턴스를 생성하고 런타임 옵션을 설정한다
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   const logger = new Logger("Bootstrap");
   const config = app.get(ConfigService);
 
