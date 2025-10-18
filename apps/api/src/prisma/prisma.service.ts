@@ -15,7 +15,7 @@ export class PrismaService
 {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(configService: ConfigService) {
     // 환경 변수 기반으로 데이터베이스 연결 정보를 주입한다
     const databaseUrl = configService.get<string>('DATABASE_URL');
     super(

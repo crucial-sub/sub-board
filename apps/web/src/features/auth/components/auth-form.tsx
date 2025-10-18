@@ -1,7 +1,7 @@
 "use client";
 
 import { useLoginMutation, useRegisterMutation } from "../hooks/useAuthMutations";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export type AuthFormMode = "login" | "register";
 
@@ -9,6 +9,10 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
   const [loginId, setLoginId] = useState("");
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
+  // useId로 생성한 입력용 ID는 렌더링이 중복되어도 충돌을 방지한다
+  const loginIdInputId = useId();
+  const nicknameInputId = useId();
+  const passwordInputId = useId();
 
   const registerMutation = useRegisterMutation();
   const loginMutation = useLoginMutation();
@@ -29,11 +33,11 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-text-secondary" htmlFor="loginId">
+        <label className="block text-sm font-medium text-text-secondary" htmlFor={loginIdInputId}>
           로그인 ID
         </label>
         <input
-          id="loginId"
+          id={loginIdInputId}
           type="text"
           required
           value={loginId}
@@ -44,11 +48,11 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
 
       {isRegister ? (
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-text-secondary" htmlFor="nickname">
+          <label className="block text-sm font-medium text-text-secondary" htmlFor={nicknameInputId}>
             닉네임
           </label>
           <input
-            id="nickname"
+            id={nicknameInputId}
             type="text"
             required
             value={nickname}
@@ -59,11 +63,11 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
       ) : null}
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-text-secondary" htmlFor="password">
+        <label className="block text-sm font-medium text-text-secondary" htmlFor={passwordInputId}>
           비밀번호
         </label>
         <input
-          id="password"
+          id={passwordInputId}
           type="password"
           required
           value={password}

@@ -46,7 +46,7 @@ export class ApiClient {
     if (response.status !== 204 && isJson) {
       try {
         data = await response.json();
-      } catch (error) {
+      } catch (_error) {
         // json 파싱 오류는 data를 비워 둔다
         data = null;
       }
@@ -60,7 +60,13 @@ export class ApiClient {
         markHydrated();
       }
 
-      const message = typeof (data as any)?.message === "string" ? (data as any).message : `API 요청 실패: ${response.status}`;
+      const message =
+        typeof data === "object" &&
+        data !== null &&
+        "message" in data &&
+        typeof (data as Record<string, unknown>).message === "string"
+          ? (data as { message: string }).message
+          : `API 요청 실패: ${response.status}`;
       throw new ApiError(response.status, message, data);
     }
 

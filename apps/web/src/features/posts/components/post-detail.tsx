@@ -1,11 +1,9 @@
 "use client";
 
 // 게시글 상세 정보와 댓글 목록/작성 폼을 함께 렌더링하는 컴포넌트
-
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
 import { CommentForm } from "./comment-form";
 import { useState } from "react";
-import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 
 export function PostDetail({ id }: { id: string }) {
   const [showCommentForm, setShowCommentForm] = useState(false);

@@ -75,7 +75,7 @@ export class AuthService {
       throw new UnauthorizedException("로그인 ID 또는 비밀번호를 확인하세요.");
     }
 
-    const publicUser = this.usersService["toPublic"](user);
+    const publicUser = this.usersService.toPublic(user);
     const tokens = await this.issueTokens(publicUser, metadata);
     return { user: publicUser, tokens };
   }
@@ -87,7 +87,7 @@ export class AuthService {
       payload = await this.jwtService.verifyAsync(refreshToken, {
         secret: this.refreshSecret,
       });
-    } catch (error) {
+    } catch (_error) {
       throw new UnauthorizedException("리프레시 토큰이 유효하지 않습니다.");
     }
 

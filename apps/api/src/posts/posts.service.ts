@@ -123,13 +123,6 @@ export class PostsService {
     return { id };
   }
 
-  private async ensureExists(id: string) {
-    const exists = await this.prisma.post.count({ where: { id } });
-    if (!exists) {
-      throw new NotFoundException("게시글을 찾을 수 없습니다.");
-    }
-  }
-
   private async ensureOwnership(id: string, authorId: string) {
     const post = await this.prisma.post.findUnique({ where: { id }, select: { authorId: true } });
     if (!post) {
