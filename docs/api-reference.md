@@ -5,7 +5,7 @@
 ## 인증 (Auth)
 
 ### POST `/auth/register`
-- 설명: 로그인 ID/닉네임/비밀번호로 회원가입을 수행하고 즉시 액세스/리프레시 토큰을 발급합니다.
+- 설명: 로그인 ID/닉네임/비밀번호로 회원가입 후 액세스/리프레시 토큰을 발급하며, HTTP Only 쿠키(`sb_access_token`, `sb_refresh_token`)로도 내려줍니다.
 - 요청 Body
   ```json
   {
@@ -34,14 +34,22 @@
   ```
 
 ### POST `/auth/login`
-- 설명: 로그인 ID/비밀번호로 인증 후 토큰을 재발급합니다.
+- 설명: 로그인 ID/비밀번호로 인증 후 토큰을 재발급하며 쿠키도 갱신합니다.
 - 요청 Body: `loginId`, `password`
 - 응답 Body: `/auth/register`와 동일한 구조
+
+### POST `/auth/refresh`
+- 설명: 쿠키에 저장된 리프레시 토큰으로 새 액세스/리프레시 토큰을 발급합니다. 요청 본문은 비어 있어도 됩니다.
+- 응답 Body: `/auth/register`와 동일한 구조
+
+### POST `/auth/logout`
+- 설명: 모든 세션을 제거하고 인증 키 쿠키를 초기화합니다.
+- 응답 Body: `{ "success": true }`
 
 ## 게시글 (Posts)
 
 ### POST `/posts`
-- 보호됨: `Authorization: Bearer <accessToken>` 필요
+- 보호됨: 쿠키(`sb_access_token`) 또는 `Authorization: Bearer` 토큰 필요
 - 요청 Body
   ```json
   {
@@ -118,18 +126,18 @@
   ```
 
 ### PATCH `/posts/:id`
-- 보호됨
+- 보호됨 (작성자 본인만 수정 가능)
 - 요청 Body: 수정할 `title`, `content`
 - 응답 Body: 수정된 게시글 요약 정보
 
 ### DELETE `/posts/:id`
-- 보호됨, 작성자만 삭제 가능
+- 보호됨, 작성자 본인만 삭제 가능
 - 응답 Body: `{ "id": "삭제된 게시글 ID" }`
 
 ## 댓글 (Comments)
 
 ### POST `/comments`
-- 보호됨
+- 보호됨 (로그인 사용자만 작성 가능)
 - 요청 Body
   ```json
   {
@@ -152,10 +160,10 @@
   ```
 
 ### DELETE `/comments/:id`
-- 보호됨, 작성자만 삭제 가능
+- 보호됨, 작성자 본인만 삭제 가능
 - 응답 Body: `{ "id": "삭제된 댓글 ID" }`
 
 ## 향후 작업 메모
-- 토큰 갱신(`/auth/refresh`) 및 로그아웃 API 구현 예정
-- Access Token 만료 시 Refresh Token을 활용하는 정책 정리 필요
+- 프론트에서 쿠키 기반 인증 요청 시 `fetch` 옵션에 `credentials: "include"` 유지
 - 게시글/댓글 작성 API에서 본문 Markdown 지원 여부 검토
+- SSE 기반 실시간 댓글 스트리밍 고려

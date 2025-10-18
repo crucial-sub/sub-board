@@ -1,3 +1,6 @@
+# 개발 노트 (2025-10-18)
+
+## 백엔드 인증 흐름 요약
 # Backend Auth Plan
 
 ## 목표
@@ -91,18 +94,15 @@ model Comment {
    - `argon2.verify()`로 비밀번호 검증 → 실패 시 `UnauthorizedException`
    - 기존 세션 무효화(선택) 후 새로운 세션/토큰 발급
 3. **토큰 갱신**
-   - 클라이언트 쿠키(`sb_refresh_token`)에서 리프레시 토큰을 읽고 유효성 검사
-   - 세션 테이블에서 해시된 토큰과 비교 후 새 액세스/리프레시 토큰 발급 및 기존 세션 제거
+   - 리프레시 토큰 유효성 검사, 세션 테이블 확인, 만료 여부 검증
+   - 새 Access Token + Refresh Token 발급, 기존 리프레시 토큰 폐기(롤링)
 4. **로그아웃**
-   - 사용자 ID 기준으로 모든 세션 삭제
-   - 응답에 HTTP Only 쿠키 초기화(`clearCookie`) 적용
+   - 세션 삭제 또는 refresh token 폐기
 
-## JWT/쿠키 설정
-- `@nestjs/jwt` 모듈 사용, Access Token 만료 15분, Refresh Token 만료 14일
+## JWT 설정
+- `@nestjs/jwt` 모듈 사용, Access Token 만료 15분, Refresh Token 만료 14일 등 정책 결정
 - 시크릿은 `.env`에 `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` 분리 저장
 - `JwtModule.registerAsync`로 ConfigService 연동
-- Nest `cookie-parser` 미들웨어, `credentials: true` CORS 설정
-- 액세스/리프레시 토큰은 HTTP Only 쿠키(`sb_access_token`, `sb_refresh_token`)로 내려주고 클라이언트에서 헤더 없이 요청 가능
 
 ## 예외 처리 및 가드
 - Nest `HttpException` 계층 사용 (`ConflictException`, `UnauthorizedException` 등)
@@ -126,7 +126,53 @@ model Comment {
    - DTO에 `class-validator` 적용 (`IsString`, `MinLength`, 등) (완료)
    - `argon2`, `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt` 설치 (완료)
 3. 글로벌 ValidationPipe & 예외 필터 설정 (main.ts 업데이트) (완료)
-4. 토큰 발급/갱신/로그아웃 API 구현 및 e2e 테스트 작성 (완료)
+4. 토큰 발급/갱신/로그아웃 API 구현 및 e2e 테스트 작성 (진행 중: 로그인/회원가입 완료)
 5. `Post`, `Comment` 모델 기반으로 게시판 CRUD API 구현 (진행 중: JWT 인증 연동 완료)
 6. 댓글/게시글 e2e 테스트 보강 및 문서화 (진행 중)
 7. 프론트엔드와 연동 (React Query mutation + Zustand 세션 스토어)
+
+
+## 프론트엔드 인증 흐름 요약
+# 프론트엔드 인증 흐름 정리
+
+## 1. 인증 상태 저장소
+- `apps/web/src/features/auth/state/auth-store.ts`
+- Zustand 스토어에 `user`, `hasHydrated` 상태를 보관
+- 서버에서 받아온 `AuthResponse`로 `setFromResponse`, 로그아웃 시 `clearAuth`
+
+## 2. 초기 세션 동기화
+- `UiProvider`에서 `useAuthSession` 훅을 실행
+- `GET /auth/refresh` 대신 `POST /auth/refresh` 호출로 액세스/리프레시 쿠키 재발급 시도
+- 성공 시 사용자 정보 저장, 실패 시 `clearAuth` 후 `hasHydrated` 플래그 설정
+
+## 3. 로그인/회원가입 흐름
+- `useLoginMutation`, `useRegisterMutation`
+  - `POST /auth/login` 및 `/auth/register`
+  - onSuccess 시 `setFromResponse` → `router.push('/posts')`
+  - 에러는 컴포넌트 단에서 표시
+
+## 4. 로그아웃 흐름
+- `useLogoutMutation`
+  - `POST /auth/logout` 이후 Zustand `clearAuth()` 호출
+  - 헤더에서 닉네임 표시 및 로그아웃 버튼 노출
+
+## 5. 보호 라우트
+- `useAuthGuard`
+  - `hasHydrated` 완료 후 `user`가 없으면 `router.replace('/login')`
+  - `/posts/new` 등 보호 페이지에서 사용
+
+## 6. 댓글/게시글 작성 폼
+- 작성 폼에서 로그인 여부 체크→ 비로그인 시 안내 메시지 출력
+- `useCreatePost`, `useCreateComment`는 성공 시 Query 무효화 및 페이지 전환
+
+## 7. Next.js 라우팅
+- `/posts` 목록과 `/search` 페이지에서 React Query `keyword` 파라미터와 호환되도록 훅 수정
+- `/posts/[id]` 상세 페이지는 `PostDetail` 컴포넌트에서 댓글 목록과 작성 폼 렌더링
+
+## 8. 다음 확장 아이디어
+- 댓글/게시글 작성 시 낙관적 업데이트 적용
+- 글 상세 페이지에서 작성자에게만 수정/삭제 버튼 노출
+- refresh 실패 시 자동 로그인 페이지 이동
+
+(2025-10-18 기준 최신 프론트 코드를 반영한 흐름)
+
