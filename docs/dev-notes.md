@@ -185,6 +185,7 @@ model Comment {
 - `biome.json` 스키마 버전을 2.2.6으로 갱신하고 VCS 연동 클라이언트를 `git`으로 지정해 최신 CLI와 호환되도록 정리했다.
 - `pnpm lint` 스크립트는 실제 소스 경로(`apps/api/src`, `apps/web/src`, `packages/shared/src`, `docs`)만 대상으로 실행되도록 조정해 `dist` 산출물에 의해 검사가 중단되지 않도록 했다.
 - Biome 설정에서 NestJS의 파라미터 데코레이터를 허용(`javascript.parser.unsafeParameterDecoratorsEnabled`)하고, DI/Tailwind 특성상 부적합한 규칙(`style.useImportType`, `suspicious.noUnknownAtRules`)은 비활성화했다.
+- e2e 테스트는 `apps/api/test/comments.e2e-spec.ts`를 추가하고 `jest-e2e.json`의 `maxWorkers`를 1로 고정해 DB 초기화 과정이 서로 간섭하지 않도록 했다.
 
 ## 프론트엔드 폼 접근성 보강
 - `AuthForm`, 게시글 작성 페이지 등 사용자 입력 폼은 `useId`를 활용해 라벨-입력 요소 사이의 고유 ID를 부여하도록 정리했다.
