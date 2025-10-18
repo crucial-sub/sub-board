@@ -1,15 +1,24 @@
-import { QueryClient } from "@tanstack/react-query";
-
-export const queryClient = new QueryClient();
-
 export class ApiClient {
   constructor(private readonly baseUrl: string) {}
 
   async get<T>(path: string, init?: RequestInit): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${path}`, {
+    return this.request<T>(path, { method: "GET", ...init });
+  }
+
+  async post<T>({ path, body, init }: { path: string; body: unknown; init?: RequestInit }) {
+    return this.request<T>(path, {
+      method: "POST",
+      body: JSON.stringify(body),
       headers: {
         "Content-Type": "application/json",
       },
+      ...init,
+    });
+  }
+
+  private async request<T>(path: string, init: RequestInit): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      credentials: "include",
       ...init,
     });
 
