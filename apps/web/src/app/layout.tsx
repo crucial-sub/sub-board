@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body>
+      <body className="bg-bg-app text-text-primary">
         <UiProvider>
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </UiProvider>

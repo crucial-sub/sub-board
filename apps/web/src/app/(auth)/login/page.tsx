@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { AuthForm } from "@/features/auth/components/auth-form";
 
-type SearchParams = {
-  error?: string;
+type SearchParams = { error?: string };
+
+type Props = {
+  searchParams?: Promise<SearchParams>;
 };
 
-export default function LoginPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function LoginPage({ searchParams }: Props) {
+  const params = (await searchParams) ?? {};
+  const error = params.error;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-bg-app px-4 py-8">
       <section className="w-full max-w-lg space-y-6 rounded-lg border border-border-muted bg-bg-surface p-8 shadow-card">
@@ -14,8 +19,8 @@ export default function LoginPage({ searchParams }: { searchParams: SearchParams
           <p className="text-sm text-text-secondary">계정에 접속해 게시판을 이용하세요.</p>
         </header>
 
-        {searchParams.error ? (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{searchParams.error}</p>
+        {error ? (
+          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
         ) : null}
 
         <AuthForm mode="login" />
