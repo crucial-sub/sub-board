@@ -1,14 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pretendard Variable (optional local fallback) */
+@font-face {
+  font-family: "Pretendard Variable";
+  src: url("/fonts/pretendard/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono for code snippets */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono/JetBrainsMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
+
+  /* Background */
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-subtle: #64748b;
+
+  /* Border */
+  --border-default: #e2e8f0;
+  --border-muted: #f1f5f9;
+
+  /* Brand */
+  --brand: #2563eb;
+  --brand-hover: #1d4ed8;
+  --brand-weak: rgba(37, 99, 235, 0.1);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  /* Shadows */
+  --shadow-card: 0 8px 20px rgba(15, 23, 42, 0.05);
+  --shadow-popover: 0 16px 40px rgba(15, 23, 42, 0.08);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-bg-app font-sans text-text-primary antialiased;
+  }
+
+  a {
+    color: var(--brand);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--brand-hover);
+  }
 }
 
-html,
-body {
-  min-height: 100%;
+@layer components {
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-full border border-border-muted bg-white/80 px-3 py-1 text-sm text-text-secondary shadow-card transition-colors duration-200;
+  }
+
+  .tag:hover {
+    @apply border-border text-text-primary;
+  }
 }

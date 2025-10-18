@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
+import { UiProvider } from "@/providers/ui-provider";
 
 export const metadata: Metadata = {
   title: "Sub Board",
@@ -9,7 +11,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="min-h-screen bg-slate-50 text-slate-900">{children}</body>
+      <body>
+        <UiProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </UiProvider>
+      </body>
     </html>
   );
 }
