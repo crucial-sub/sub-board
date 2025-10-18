@@ -124,5 +124,6 @@ model Comment {
    - `argon2`, `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt` 설치 (완료)
 3. 글로벌 ValidationPipe & 예외 필터 설정 (main.ts 업데이트) (완료)
 4. 토큰 발급/갱신/로그아웃 API 구현 및 e2e 테스트 작성 (진행 중: 로그인/회원가입 완료)
-5. `Post`, `Comment` 모델 기반으로 게시판 CRUD API 구현 (착수)
-6. 프론트엔드와 연동 (React Query mutation + Zustand 세션 스토어)
+5. `Post`, `Comment` 모델 기반으로 게시판 CRUD API 구현 (진행 중: JWT 인증 연동 완료)
+6. 댓글/게시글 e2e 테스트 보강 및 문서화 (진행 중)
+7. 프론트엔드와 연동 (React Query mutation + Zustand 세션 스토어)
