@@ -180,3 +180,7 @@ model Comment {
 - `apps/web/src/lib/api-client.ts`에서 `ApiError` 클래스를 도입해 HTTP 상태 코드와 응답 본문을 함께 전파한다.
 - 401 응답이 들어오면 `useAuthStore`의 `clearAuth`, `markHydrated`를 호출해 세션 상태를 즉시 초기화한다.
 - 게시글/댓글 작성 폼은 서버에서 내려온 에러 메시지를 그대로 표시해 사용자에게 원인을 안내한다.
+
+## 빌드/테스트 도구 세팅
+- `biome.json` 스키마 버전을 2.2.6으로 갱신하고 VCS 연동 클라이언트를 `git`으로 지정해 최신 CLI와 호환되도록 정리했다.
+- `pnpm lint` 스크립트는 실제 소스 경로(`apps/api/src`, `apps/web/src`, `packages/shared/src`, `docs`)만 대상으로 실행되도록 조정해 `dist` 산출물에 의해 검사가 중단되지 않도록 했다.

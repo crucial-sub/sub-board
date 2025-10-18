@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "lint": "biome lint .",
+    "lint": "biome lint apps/api/src apps/web/src packages/shared/src docs",
     "format": "biome format . --write",
     "check": "biome check .",
     "typecheck": "pnpm -r typecheck",
