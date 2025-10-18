@@ -176,3 +176,7 @@ model Comment {
 
 (2025-10-18 기준 최신 프론트 코드를 반영한 흐름)
 
+## 프론트엔드 API 클라이언트 개선
+- `apps/web/src/lib/api-client.ts`에서 `ApiError` 클래스를 도입해 HTTP 상태 코드와 응답 본문을 함께 전파한다.
+- 401 응답이 들어오면 `useAuthStore`의 `clearAuth`, `markHydrated`를 호출해 세션 상태를 즉시 초기화한다.
+- 게시글/댓글 작성 폼은 서버에서 내려온 에러 메시지를 그대로 표시해 사용자에게 원인을 안내한다.

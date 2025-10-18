@@ -10,6 +10,8 @@ export function CommentForm({ postId }: { postId: string }) {
   const mutation = useCreateComment(postId);
   const user = useAuthStore((state) => state.user);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  // 서버에서 내려온 구체적인 오류 문구를 사용자에게 보여준다
+  const errorMessage = mutation.error?.message ?? "댓글 작성에 실패했습니다.";
 
   if (!hasHydrated) {
     return null;
@@ -42,7 +44,7 @@ export function CommentForm({ postId }: { postId: string }) {
       >
         댓글 작성
       </button>
-      {mutation.error ? <p className="text-sm text-red-500">댓글 작성에 실패했습니다.</p> : null}
+      {mutation.error ? <p className="text-sm text-red-500">{errorMessage}</p> : null}
     </form>
   );
 }

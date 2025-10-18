@@ -12,6 +12,8 @@ export default function NewPostPage() {
   const [content, setContent] = useState(" ");
   const mutation = useCreatePost();
   const router = useRouter();
+  // 서버 응답 에러를 그대로 노출하거나 기본 문구로 대체한다
+  const errorMessage = mutation.error?.message ?? "게시글 작성에 실패했습니다.";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,7 +49,6 @@ export default function NewPostPage() {
             required
           />
         </div>
-
         <div className="space-y-2">
           <label className="text-sm font-medium text-text-secondary" htmlFor="content">
             내용
@@ -61,7 +62,9 @@ export default function NewPostPage() {
           />
         </div>
 
-        {mutation.error ? <p className="text-sm text-red-500">게시글 작성에 실패했습니다.</p> : null}
+        {mutation.error ? (
+          <p className="text-sm text-red-500">{errorMessage}</p>
+        ) : null}
 
         <button
           type="submit"
