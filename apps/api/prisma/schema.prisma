@@ -1,0 +1,20 @@
+/// Prisma 클라이언트를 생성하는 설정 블록
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// PostgreSQL 데이터베이스 연결 정보를 정의한다
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// 애플리케이션의 기본 사용자 모델 정의
+model User {
+  id           String   @id @default(cuid())
+  loginId      String   @unique
+  nickname     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
