@@ -1,5 +1,7 @@
 "use client";
 
+// 게시글을 키워드로 검색하는 페이지 컴포넌트
+
 import { useState } from "react";
 import { PostList } from "@/features/posts/components/post-list";
 

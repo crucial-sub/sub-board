@@ -1,5 +1,7 @@
 "use client";
 
+// 게시판 목록 페이지와 검색 입력 UI
+
 import { useState } from "react";
 import { PostList } from "@/features/posts/components/post-list";
 

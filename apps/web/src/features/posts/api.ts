@@ -1,3 +1,4 @@
+// 게시글 및 댓글 작성을 위한 API 래퍼 함수 모음
 import { apiClient } from "@/lib/api-client";
 
 export type CreatePostPayload = {

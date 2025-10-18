@@ -80,6 +80,7 @@ export class AuthService {
     return { user: publicUser, tokens };
   }
 
+  // 리프레시 토큰을 검증하고 새 액세스/리프레시 토큰을 발급한다
   async refreshTokens(refreshToken: string, metadata: SessionMetadata): Promise<AuthResult> {
     let payload: { sub: string };
     try {
@@ -106,10 +107,12 @@ export class AuthService {
     return { user, tokens };
   }
 
+  // 모든 세션을 제거하여 사용자를 로그아웃 처리한다
   async logout(userId: string): Promise<void> {
     await this.prisma.session.deleteMany({ where: { userId } });
   }
 
+  // 저장된 세션 중 전달된 리프레시 토큰과 일치하는 항목을 찾는다
   private async findMatchingSession(userId: string, refreshToken: string) {
     const sessions = await this.prisma.session.findMany({ where: { userId } });
     for (const session of sessions) {

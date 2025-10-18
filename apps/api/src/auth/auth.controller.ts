@@ -24,6 +24,7 @@ export class AuthController {
     this.isProduction = this.configService.get<string>("NODE_ENV") === "production";
   }
 
+  // 회원가입 시 토큰을 쿠키로 내려준다
   @Post("register")
   async register(
     @Body() dto: RegisterDto,
@@ -35,6 +36,7 @@ export class AuthController {
     return result;
   }
 
+  // 로그인 시 기존 세션을 정리하고 새 토큰을 쿠키에 설정한다
   @Post("login")
   @HttpCode(HttpStatus.OK)
   async login(
@@ -47,6 +49,7 @@ export class AuthController {
     return result;
   }
 
+  // 리프레시 토큰으로 새 액세스토큰을 발급한다
   @Post("refresh")
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response): Promise<AuthResult> {
@@ -60,6 +63,7 @@ export class AuthController {
     return result;
   }
 
+  // 모든 세션을 삭제하고 인증 쿠키를 지운다
   @Post("logout")
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)

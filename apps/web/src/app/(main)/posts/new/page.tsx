@@ -1,5 +1,7 @@
 "use client";
 
+// 새 게시글을 작성하는 페이지 컴포넌트
+
 import { useState } from "react";
 import { useCreatePost } from "@/features/posts/hooks/usePostMutations";
 import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";

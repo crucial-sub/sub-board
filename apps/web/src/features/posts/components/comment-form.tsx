@@ -1,5 +1,7 @@
 "use client";
 
+// 댓글 작성을 위한 입력 폼과 제출 로직을 담당하는 컴포넌트
+
 import { useState } from "react";
 import { useCreateComment } from "../hooks/usePostMutations";
 

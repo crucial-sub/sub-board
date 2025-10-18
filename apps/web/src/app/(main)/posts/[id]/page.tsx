@@ -1,4 +1,5 @@
 import Link from "next/link";
+// 게시글 상세 페이지 라우트
 import { PostDetail } from "@/features/posts/components/post-detail";
 
 export default function PostDetailPage({ params }: { params: { id: string } }) {

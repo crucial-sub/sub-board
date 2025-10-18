@@ -14,6 +14,7 @@ type JwtPayload = {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     const secret = configService.get<string>("JWT_ACCESS_SECRET") ?? "test-access-secret";
+    // 우선순위를 쿠키로 두고, 없을 때만 Authorization 헤더를 읽는다
     const cookieExtractor = (request: Request) => request?.cookies?.sb_access_token || null;
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor, ExtractJwt.fromAuthHeaderAsBearerToken()]),

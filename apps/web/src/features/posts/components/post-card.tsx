@@ -1,3 +1,4 @@
+// 게시글 요약 정보를 카드 형태로 보여주는 컴포넌트
 import Link from "next/link";
 
 export type PostCardProps = {

@@ -1,3 +1,4 @@
+// 게시글 상세 데이터를 React Query로 조회하는 훅
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 

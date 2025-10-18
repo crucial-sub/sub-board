@@ -1,5 +1,7 @@
 "use client";
 
+// 게시글 목록을 조회하고 무한 스크롤/검색을 처리하는 컴포넌트
+
 import { usePostsInfiniteQuery } from "@/hooks/usePostsQuery";
 import { PostCard } from "./post-card";
 

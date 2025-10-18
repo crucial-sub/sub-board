@@ -1,3 +1,4 @@
+// 게시글 목록을 페이지네이션/무한스크롤 형태로 조회하는 React Query 훅
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 

@@ -1,5 +1,7 @@
 "use client";
 
+// 프런트 전역 상단 내비게이션 바를 렌더링한다
+
 import Link from "next/link";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 

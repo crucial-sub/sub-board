@@ -1,5 +1,6 @@
+// 게시글과 댓글 작성 뮤테이션을 제공하는 훅
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createComment, createPost, type CreateCommentPayload, type CreatePostPayload } from "../api";
+import { createComment, createPost } from "../api";
 
 export function useCreatePost() {
   const queryClient = useQueryClient();
