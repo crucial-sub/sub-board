@@ -1,5 +1,5 @@
 // 댓글 CRUD 로직을 담당하는 서비스
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
@@ -41,11 +41,18 @@ export class CommentsService {
     });
   }
 
-  async remove(commentId: string) {
-    const exists = await this.prisma.comment.count({ where: { id: commentId } });
-    if (!exists) {
+  async remove(commentId: string, authorId: string) {
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+      select: { authorId: true },
+    });
+    if (!comment) {
       throw new NotFoundException("댓글을 찾을 수 없습니다.");
     }
+    if (comment.authorId !== authorId) {
+      throw new ForbiddenException("댓글을 삭제할 권한이 없습니다.");
+    }
+
     await this.prisma.comment.delete({ where: { id: commentId } });
     return { id: commentId };
   }
