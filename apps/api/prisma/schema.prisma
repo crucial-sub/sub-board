@@ -20,6 +20,8 @@ model User {
 
   // 액세스/리프레시 토큰 관리를 위한 세션 목록
   sessions     Session[]
+  posts        Post[]
+  comments     Comment[]
 }
 
 /// 리프레시 토큰을 저장해 인증 세션을 추적하는 모델
@@ -33,4 +35,31 @@ model Session {
   createdAt    DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 게시글 정보를 저장하는 모델
+model Post {
+  id          String    @id @default(cuid())
+  authorId    String
+  title       String
+  content     String
+  viewCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+}
+
+/// 게시글에 달린 댓글을 저장하는 모델
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }

@@ -28,6 +28,8 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   sessions     Session[]
+  posts        Post[]
+  comments     Comment[]
 }
 
 model Session {
@@ -41,10 +43,36 @@ model Session {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  title     String
+  content   String
+  viewCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
 ```
 
 - Session 모델은 선택 사항이지만, 로컬 개발 시에도 안전하게 로그아웃/토큰 폐기가 가능하도록 도입 권장
 - 리프레시 토큰을 DB에 저장하고, 재발급 시 롤링(갱신) 전략 사용
+- Post/Comment 모델은 게시판 CRUD의 토대를 마련하며, User와의 관계를 통해 작성자 정보를 추적한다.
 
 ## DTO & Response 설계
 - `RegisterDto`: `loginId`, `nickname`, `password`
