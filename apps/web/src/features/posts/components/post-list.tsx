@@ -3,7 +3,7 @@
 import { usePostsInfiniteQuery } from "@/hooks/usePostsQuery";
 import { PostCard } from "./post-card";
 
-export function PostList() {
+export function PostList({ keyword }: { keyword?: string }) {
   const {
     data,
     isLoading,
@@ -11,7 +11,7 @@ export function PostList() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = usePostsInfiniteQuery();
+  } = usePostsInfiniteQuery({ keyword });
 
   const posts = data?.pages.flatMap((page) => page.items) ?? [];
 
@@ -30,7 +30,7 @@ export function PostList() {
   }
 
   if (posts.length === 0) {
-    return <p className="text-text-secondary">아직 게시글이 없습니다. 첫 글을 작성해보세요!</p>;
+    return <p className="text-text-secondary">검색 결과가 없습니다.</p>;
   }
 
   return (
