@@ -118,10 +118,11 @@ model Comment {
 4. 테스트 환경 분리를 위해 `.env.test`에서 `DATABASE_URL`을 test DB로 지정 → GitHub Actions 등 CI에서 `prisma migrate deploy`
 
 ## 다음 작업 순서 제안
-1. `Session` 모델 추가 및 `db:migrate dev` 실행 → 테스트 스키마 정리
-2. `UsersModule`, `AuthModule` 구현
-   - DTO에 `class-validator` 적용 (`IsString`, `MinLength`, 등)
-   - `argon2`, `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt` 설치
-3. 글로벌 ValidationPipe & 예외 필터 설정 (main.ts 업데이트)
-4. 토큰 발급/갱신/로그아웃 API 구현 및 e2e 테스트 작성
-5. 프론트엔드와 연동 (React Query mutation + Zustand 세션 스토어)
+1. `Session` 모델 추가 및 `db:migrate dev` 실행 → 테스트 스키마 정리 (완료)
+2. `UsersModule`, `AuthModule` 구현 (완료)
+   - DTO에 `class-validator` 적용 (`IsString`, `MinLength`, 등) (완료)
+   - `argon2`, `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt` 설치 (완료)
+3. 글로벌 ValidationPipe & 예외 필터 설정 (main.ts 업데이트) (완료)
+4. 토큰 발급/갱신/로그아웃 API 구현 및 e2e 테스트 작성 (진행 중: 로그인/회원가입 완료)
+5. `Post`, `Comment` 모델 기반으로 게시판 CRUD API 구현 (착수)
+6. 프론트엔드와 연동 (React Query mutation + Zustand 세션 스토어)
