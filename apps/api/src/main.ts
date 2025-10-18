@@ -1,5 +1,5 @@
 // 애플리케이션 부트스트랩을 책임지는 진입점 파일
-import { Logger } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
@@ -9,6 +9,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("Bootstrap");
   const config = app.get(ConfigService);
+
+  // 요청 DTO를 안전하게 검증하기 위한 전역 파이프 설정
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const globalPrefix = config.get<string>("API_GLOBAL_PREFIX");
   if (globalPrefix) {

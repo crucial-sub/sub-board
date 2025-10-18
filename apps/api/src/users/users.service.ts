@@ -34,6 +34,11 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { loginId } });
   }
 
+  async findByNickname(nickname: string): Promise<User | null> {
+    // 닉네임 중복 확인이나 프로필 탐색에 활용한다
+    return this.prisma.user.findUnique({ where: { nickname } });
+  }
+
   async findById(id: string): Promise<PublicUser | null> {
     // 세션 확인 등에서 사용자 프로필을 조회한다
     const user = await this.prisma.user.findUnique({ where: { id } });
@@ -49,7 +54,7 @@ export class UsersService {
     return this.toPublic(user);
   }
 
-  private toPublic(user: User): PublicUser {
+  toPublic(user: User): PublicUser {
     // 비밀번호 등 민감 정보는 노출하지 않는다
     const { id, loginId, nickname, createdAt, updatedAt } = user;
     return { id, loginId, nickname, createdAt, updatedAt };

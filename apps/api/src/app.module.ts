@@ -1,6 +1,7 @@
 // 애플리케이션의 루트 모듈로 핵심 서브 모듈을 묶어 준다
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { AuthModule } from "./auth/auth.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
@@ -12,6 +13,7 @@ import { PrismaModule } from "./prisma/prisma.module";
       envFilePath: [".env", "../../.env"],
     }),
     PrismaModule,
+    AuthModule,
     HealthModule,
   ],
   controllers: [],
