@@ -1,9 +1,12 @@
 "use client";
 
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
+import { CommentForm } from "./comment-form";
+import { useState } from "react";
 import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 
 export function PostDetail({ id }: { id: string }) {
+  const [showCommentForm, setShowCommentForm] = useState(false);
   const { data, isLoading, isError } = usePostDetailQuery(id);
 
   if (isLoading) {
@@ -31,7 +34,17 @@ export function PostDetail({ id }: { id: string }) {
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-text-primary">댓글</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-text-primary">댓글</h2>
+          <button
+            type="button"
+            onClick={() => setShowCommentForm((prev) => !prev)}
+            className="text-sm text-brand hover:text-brand-hover"
+          >
+            {showCommentForm ? "작성 취소" : "댓글 쓰기"}
+          </button>
+        </div>
+        {showCommentForm ? <CommentForm postId={id} /> : null}
         {data.comments.length === 0 ? (
           <p className="text-sm text-text-secondary">첫 댓글을 남겨보세요.</p>
         ) : (

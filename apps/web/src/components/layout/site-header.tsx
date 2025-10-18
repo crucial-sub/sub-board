@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/" as const, label: "홈" },
   { href: "/posts" as const, label: "게시판" },
   { href: "/search" as const, label: "검색" },
+  { href: "/posts/new" as const, label: "글 작성" },
 ];
 
 export function SiteHeader() {
