@@ -1,3 +1,4 @@
+// 인증 관련 API 호출 래퍼 함수들
 import { apiClient } from "@/lib/api-client";
 
 export type RegisterPayload = {
@@ -33,4 +34,12 @@ export function register(payload: RegisterPayload) {
 
 export function login(payload: LoginPayload) {
   return apiClient.post<AuthResponse>({ path: "/auth/login", body: payload });
+}
+
+export function refreshSession() {
+  return apiClient.post<AuthResponse>({ path: "/auth/refresh", body: {} });
+}
+
+export function logout() {
+  return apiClient.post<{ success: boolean }>({ path: "/auth/logout", body: {} });
 }

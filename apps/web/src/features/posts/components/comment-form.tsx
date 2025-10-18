@@ -1,13 +1,23 @@
 "use client";
 
 // 댓글 작성을 위한 입력 폼과 제출 로직을 담당하는 컴포넌트
-
 import { useState } from "react";
 import { useCreateComment } from "../hooks/usePostMutations";
+import { useAuthStore } from "@/features/auth/state/auth-store";
 
 export function CommentForm({ postId }: { postId: string }) {
   const [content, setContent] = useState(" ");
   const mutation = useCreateComment(postId);
+  const user = useAuthStore((state) => state.user);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+
+  if (!hasHydrated) {
+    return null;
+  }
+
+  if (!user) {
+    return <p className="rounded-md border border-border-muted bg-white px-3 py-2 text-sm text-text-secondary">로그인 후 댓글을 작성할 수 있습니다.</p>;
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

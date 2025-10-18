@@ -1,7 +1,7 @@
 "use client";
 
 // 새 게시글을 작성하는 페이지 컴포넌트
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCreatePost } from "@/features/posts/hooks/usePostMutations";
 import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
@@ -11,13 +11,19 @@ export default function NewPostPage() {
   const [title, setTitle] = useState(" ");
   const [content, setContent] = useState(" ");
   const mutation = useCreatePost();
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    await mutation.mutateAsync({ title: title.trim(), content: content.trim() });
+    const result = await mutation.mutateAsync({ title: title.trim(), content: content.trim() });
     setTitle(" ");
     setContent(" ");
+    if (result?.id) {
+      router.push(`/posts/${result.id}`);
+    } else {
+      router.push("/posts");
+    }
   };
 
   return (

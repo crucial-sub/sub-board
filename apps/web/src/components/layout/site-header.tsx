@@ -1,9 +1,9 @@
 "use client";
 
 // 프런트 전역 상단 내비게이션 바를 렌더링한다
-
 import Link from "next/link";
 import { useAuthStore } from "@/features/auth/state/auth-store";
+import { useLogoutMutation } from "@/features/auth/hooks/useAuthMutations";
 
 const NAV_ITEMS = [
   { href: "/" as const, label: "홈" },
@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 
 export function SiteHeader() {
   const user = useAuthStore((state) => state.user);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const logoutMutation = useLogoutMutation();
 
   return (
     <header className="border-b border-border-muted bg-white/70 backdrop-blur">
@@ -29,13 +29,17 @@ export function SiteHeader() {
             </Link>
           ))}
           {user ? (
-            <button
-              type="button"
-              onClick={clearAuth}
-              className="rounded-md border border-border-muted px-3 py-1 text-text-primary transition hover:border-brand hover:text-brand"
-            >
-              로그아웃
-            </button>
+            <div className="flex items-center gap-3 text-text-primary">
+              <span className="hidden text-sm font-medium sm:inline">{user.nickname}님</span>
+              <button
+                type="button"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+                className="rounded-md border border-border-muted px-3 py-1 text-text-primary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                로그아웃
+              </button>
+            </div>
           ) : (
             <Link
               href="/login"
