@@ -4,10 +4,17 @@
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
 import { CommentForm } from "./comment-form";
 import { useState } from "react";
+import { useAuthStore } from "@/features/auth/state/auth-store";
+import { useDeleteComment } from "@/features/posts/hooks/usePostMutations";
 
 export function PostDetail({ id }: { id: string }) {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const { data, isLoading, isError } = usePostDetailQuery(id);
+  const user = useAuthStore((state) => state.user);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  // 댓글 삭제 후 상세 데이터를 무효화하는 뮤테이션
+  const deleteMutation = useDeleteComment(id);
+  const pendingCommentId = deleteMutation.isPending ? (deleteMutation.variables as string | undefined) : undefined;
 
   if (isLoading) {
     return <p className="text-text-secondary">게시글을 불러오는 중입니다...</p>;
@@ -45,6 +52,11 @@ export function PostDetail({ id }: { id: string }) {
           </button>
         </div>
         {showCommentForm ? <CommentForm postId={id} /> : null}
+        {deleteMutation.error ? (
+          <p className="text-sm text-red-500">
+            {deleteMutation.error instanceof Error ? deleteMutation.error.message : "댓글 삭제에 실패했습니다."}
+          </p>
+        ) : null}
         {data.comments.length === 0 ? (
           <p className="text-sm text-text-secondary">첫 댓글을 남겨보세요.</p>
         ) : (
@@ -53,7 +65,19 @@ export function PostDetail({ id }: { id: string }) {
               <li key={comment.id} className="rounded-md border border-border-muted bg-white p-4 text-sm shadow-sm">
                 <div className="mb-1 flex items-center justify-between text-xs text-text-secondary">
                   <span>{comment.author.nickname}</span>
-                  <time dateTime={comment.createdAt}>{new Date(comment.createdAt).toLocaleString()}</time>
+                  <div className="flex items-center gap-2">
+                    <time dateTime={comment.createdAt}>{new Date(comment.createdAt).toLocaleString()}</time>
+                    {hasHydrated && user?.id === comment.author.id ? (
+                      <button
+                        type="button"
+                        onClick={() => deleteMutation.mutateAsync(comment.id)}
+                        disabled={pendingCommentId === comment.id}
+                        className="rounded border border-border-muted px-2 py-1 text-xs text-text-secondary transition hover:border-red-500 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {pendingCommentId === comment.id ? "삭제 중..." : "삭제"}
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
                 <p className="text-text-primary">{comment.content}</p>
               </li>
