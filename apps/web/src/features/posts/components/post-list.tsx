@@ -8,16 +8,16 @@ import { PostCard } from "./post-card";
 // 로딩 상태에서 사용할 스켈레톤 카드의 고정 키 목록
 const LOADING_SKELETON_KEYS = ["skeleton-1", "skeleton-2", "skeleton-3", "skeleton-4"];
 
-export function PostList({ keyword, mode = "infinite", pageSize = 12, page, onPageChange }: { keyword?: string; mode?: "infinite" | "paged"; pageSize?: number; page?: number; onPageChange?: (page: number) => void }) {
+export function PostList({ keyword, tag, mode = "infinite", pageSize = 12, page, onPageChange }: { keyword?: string; tag?: string; mode?: "infinite" | "paged"; pageSize?: number; page?: number; onPageChange?: (page: number) => void }) {
   if (mode === "paged") {
-    return <PagedPostList keyword={keyword} pageSize={pageSize} page={page} onPageChange={onPageChange} />;
+    return <PagedPostList keyword={keyword} tag={tag} pageSize={pageSize} page={page} onPageChange={onPageChange} />;
   }
 
-  return <InfinitePostList keyword={keyword} />;
+  return <InfinitePostList keyword={keyword} tag={tag} />;
 }
 
-function InfinitePostList({ keyword }: { keyword?: string }) {
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsInfiniteQuery({ keyword });
+function InfinitePostList({ keyword, tag }: { keyword?: string; tag?: string }) {
+  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = usePostsInfiniteQuery({ keyword, tag });
 
   const posts = data?.pages.flatMap((page) => page.items) ?? [];
 
@@ -36,7 +36,7 @@ function InfinitePostList({ keyword }: { keyword?: string }) {
   }
 
   if (posts.length === 0) {
-    return <p className="text-text-secondary">검색 결과가 없습니다.</p>;
+    return <p className="text-text-secondary">표시할 게시글이 없습니다.</p>;
   }
 
   return (
@@ -63,7 +63,7 @@ function InfinitePostList({ keyword }: { keyword?: string }) {
   );
 }
 
-function PagedPostList({ keyword, pageSize, page: controlledPage, onPageChange }: { keyword?: string; pageSize: number; page?: number; onPageChange?: (page: number) => void }) {
+function PagedPostList({ keyword, tag, pageSize, page: controlledPage, onPageChange }: { keyword?: string; tag?: string; pageSize: number; page?: number; onPageChange?: (page: number) => void }) {
   const [internalPage, setInternalPage] = useState(1);
   const isControlled = typeof controlledPage === "number" && typeof onPageChange === "function";
   const activePage = isControlled ? (controlledPage as number) : internalPage;
@@ -71,7 +71,12 @@ function PagedPostList({ keyword, pageSize, page: controlledPage, onPageChange }
 
   const trimmedKeyword = keyword?.trim() ?? "";
 
-  const { data, isLoading, isError } = usePostsQuery({ page: activePage, pageSize, keyword: trimmedKeyword ? trimmedKeyword : undefined });
+  const { data, isLoading, isError } = usePostsQuery({
+    page: activePage,
+    pageSize,
+    keyword: trimmedKeyword ? trimmedKeyword : undefined,
+    tag,
+  });
   const posts = data?.items ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -102,7 +107,7 @@ function PagedPostList({ keyword, pageSize, page: controlledPage, onPageChange }
   }
 
   if (posts.length === 0) {
-    return <p className="text-text-secondary">검색 결과가 없습니다.</p>;
+    return <p className="text-text-secondary">표시할 게시글이 없습니다.</p>;
   }
 
   return (

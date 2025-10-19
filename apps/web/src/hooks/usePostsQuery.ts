@@ -14,13 +14,16 @@ type PostListResponse = {
       loginId: string;
       nickname: string;
     };
+    tags: Array<{
+      name: string;
+    }>;
   }>;
   total: number;
   page: number;
   pageSize: number;
 };
 
-export function usePostsQuery({ page, pageSize, keyword }: { page: number; pageSize?: number; keyword?: string }) {
+export function usePostsQuery({ page, pageSize, keyword, tag }: { page: number; pageSize?: number; keyword?: string; tag?: string }) {
   const query = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize ?? 10),
@@ -28,16 +31,19 @@ export function usePostsQuery({ page, pageSize, keyword }: { page: number; pageS
   if (keyword) {
     query.set("keyword", keyword);
   }
+  if (tag) {
+    query.set("tag", tag);
+  }
 
   return useQuery({
-    queryKey: ["posts", page, pageSize, keyword],
+    queryKey: ["posts", page, pageSize, keyword, tag],
     queryFn: () => apiClient.get<PostListResponse>(`/posts?${query.toString()}`),
   });
 }
 
-export function usePostsInfiniteQuery({ pageSize = 10, keyword }: { pageSize?: number; keyword?: string }) {
+export function usePostsInfiniteQuery({ pageSize = 10, keyword, tag }: { pageSize?: number; keyword?: string; tag?: string }) {
   return useInfiniteQuery({
-    queryKey: ["posts", "infinite", pageSize, keyword],
+    queryKey: ["posts", "infinite", pageSize, keyword, tag],
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
       const query = new URLSearchParams({
@@ -46,6 +52,9 @@ export function usePostsInfiniteQuery({ pageSize = 10, keyword }: { pageSize?: n
       });
       if (keyword) {
         query.set("keyword", keyword);
+      }
+      if (tag) {
+        query.set("tag", tag);
       }
       return apiClient.get<PostListResponse>(`/posts?${query.toString()}`);
     },

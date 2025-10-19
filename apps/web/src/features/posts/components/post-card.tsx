@@ -10,9 +10,12 @@ export type PostCardProps = {
     id: string;
     nickname: string;
   };
+  tags?: Array<{
+    name: string;
+  }>;
 };
 
-export function PostCard({ id, title, viewCount, createdAt, author }: PostCardProps) {
+export function PostCard({ id, title, viewCount, createdAt, author, tags }: PostCardProps) {
   const created = new Date(createdAt);
 
   return (
@@ -25,6 +28,15 @@ export function PostCard({ id, title, viewCount, createdAt, author }: PostCardPr
         <Link href={`/posts/${id}`}>{title}</Link>
       </h2>
       <div className="text-xs text-text-secondary">조회수 {viewCount.toLocaleString()}</div>
+      {tags?.length ? (
+        <div className="flex flex-wrap gap-2 text-[10px] text-text-tertiary">
+          {tags.map((tag) => (
+            <span key={tag.name} className="rounded-full border border-border-muted px-2 py-0.5">
+              #{tag.name}
+            </span>
+          ))}
+        </div>
+      ) : null}
     </article>
   );
 }

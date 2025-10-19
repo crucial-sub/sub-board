@@ -96,6 +96,15 @@ export default function SearchPage() {
                     <h3 className="text-lg font-semibold text-text-primary">{post.title}</h3>
                     <p className="line-clamp-2 text-sm text-text-secondary">{post.content}</p>
                   </Link>
+                  {post.tags?.length ? (
+                    <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-text-tertiary">
+                      {post.tags.map((tag) => (
+                        <span key={tag.name} className="rounded-full border border-border-muted px-2 py-0.5">
+                          #{tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                 </li>
               ))}
             </ul>

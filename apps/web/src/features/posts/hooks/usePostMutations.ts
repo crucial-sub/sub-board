@@ -8,6 +8,7 @@ export function useCreatePost() {
     mutationFn: createPost,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["posts"] });
+      void queryClient.invalidateQueries({ queryKey: ["posts", "tags"] });
     },
   });
 }

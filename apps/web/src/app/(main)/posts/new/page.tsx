@@ -10,20 +10,41 @@ export default function NewPostPage() {
   useAuthGuard();
   const [title, setTitle] = useState(" ");
   const [content, setContent] = useState(" ");
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   // 각 입력 필드는 useId로 생성된 고유 ID를 사용해 중복을 방지한다
   const titleInputId = useId();
   const contentInputId = useId();
+  const tagInputId = useId();
   const mutation = useCreatePost();
   const router = useRouter();
   // 서버 응답 에러를 그대로 노출하거나 기본 문구로 대체한다
   const errorMessage = mutation.error?.message ?? "게시글 작성에 실패했습니다.";
 
+  const handleAddTag = () => {
+    const normalized = tagInput.replace(/^#/, "").trim();
+    if (!normalized) return;
+    if (tags.length >= 10) return;
+    if (tags.some((tag) => tag.toLowerCase() === normalized.toLowerCase())) {
+      setTagInput("");
+      return;
+    }
+    setTags((prev) => [...prev, normalized]);
+    setTagInput("");
+  };
+
+  const handleRemoveTag = (name: string) => {
+    setTags((prev) => prev.filter((tag) => tag !== name));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    const result = await mutation.mutateAsync({ title: title.trim(), content: content.trim() });
+    const result = await mutation.mutateAsync({ title: title.trim(), content: content.trim(), tags });
     setTitle(" ");
     setContent(" ");
+    setTags([]);
+    setTagInput("");
     if (result?.id) {
       router.push(`/posts/${result.id}`);
     } else {
@@ -63,6 +84,58 @@ export default function NewPostPage() {
             className="min-h-[200px] w-full rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-text-secondary" htmlFor={tagInputId}>
+            태그
+          </label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                id={tagInputId}
+                type="text"
+                value={tagInput}
+                onChange={(event) => setTagInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleAddTag();
+                  }
+                }}
+                placeholder="태그를 입력하고 Enter를 눌러 추가하세요 (최대 10개)"
+                className="flex-1 rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+              />
+              <button
+                type="button"
+                onClick={handleAddTag}
+                className="rounded-md border border-border-muted bg-white px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand hover:text-brand"
+              >
+                추가
+              </button>
+            </div>
+            {tags.length ? (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-2 rounded-full border border-border-muted bg-white px-3 py-1 text-xs text-text-secondary"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="text-text-tertiary transition hover:text-red-500"
+                    >
+                      제거
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-text-tertiary">태그는 검색과 필터링에 사용됩니다. 예: 프론트엔드, 성능, Q&A</p>
+            )}
+          </div>
         </div>
 
         {mutation.error ? (

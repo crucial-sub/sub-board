@@ -14,6 +14,9 @@ type PostDetailResponse = {
     loginId: string;
     nickname: string;
   };
+  tags: Array<{
+    name: string;
+  }>;
   comments: Array<{
     id: string;
     content: string;

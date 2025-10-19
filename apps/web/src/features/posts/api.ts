@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/api-client";
 export type CreatePostPayload = {
   title: string;
   content: string;
+  tags?: string[];
 };
 
 export type CreateCommentPayload = {

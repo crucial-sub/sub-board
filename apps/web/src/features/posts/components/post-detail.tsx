@@ -2,6 +2,7 @@
 
 // 게시글 상세 정보와 댓글 목록/작성 폼을 함께 렌더링하는 컴포넌트
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
+import Link from "next/link";
 import { CommentForm } from "./comment-form";
 import { useState } from "react";
 import { useAuthStore } from "@/features/auth/state/auth-store";
@@ -39,6 +40,20 @@ export function PostDetail({ id }: { id: string }) {
       <div className="whitespace-pre-wrap rounded-lg border border-border-muted bg-white p-6 shadow-card">
         {data.content}
       </div>
+
+      {data.tags.length ? (
+        <div className="flex flex-wrap gap-2">
+          {data.tags.map((tag) => (
+            <Link
+              key={tag.name}
+              href={`/posts?tag=${encodeURIComponent(tag.name)}`}
+              className="rounded-full border border-border-muted px-3 py-1 text-xs text-text-secondary transition hover:border-brand hover:text-brand"
+            >
+              #{tag.name}
+            </Link>
+          ))}
+        </div>
+      ) : null}
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
