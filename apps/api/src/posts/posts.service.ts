@@ -90,6 +90,7 @@ export class PostsService {
         select: {
           id: true,
           title: true,
+          content: true,
           viewCount: true,
           createdAt: true,
           updatedAt: true,

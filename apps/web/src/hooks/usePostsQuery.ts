@@ -6,6 +6,7 @@ type PostListResponse = {
   items: Array<{
     id: string;
     title: string;
+    content: string;
     viewCount: number;
     createdAt: string;
     updatedAt: string;
