@@ -48,35 +48,41 @@ async function main() {
       content:
         "Next.js 15에서 추가된 라우팅과 서버 액션을 직접 사용해본 경험을 공유합니다. 핵심 포인트와 주의할 점을 정리했어요.",
       author: createdUsers[0],
+      tags: ["Next.js", "업데이트"],
     },
     {
       title: "주간 스터디 모집 공지",
       content:
         "매주 토요일 오전에 열리는 프론트엔드 스터디입니다. React, TypeScript 위주로 학습하고 함께 프로젝트를 진행해요.",
       author: createdUsers[0],
+      tags: ["스터디", "공지"],
     },
     {
       title: "Prisma 성능 튜닝 팁",
       content: "Prisma를 사용하면서 겪었던 N+1 쿼리 이슈와 해결 방법, 인덱스 설계 팁을 정리했습니다.",
       author: createdUsers[1],
+      tags: ["Prisma", "성능"],
     },
     {
       title: "Tailwind CSS 유틸리티 정리",
       content:
         "프로덕션에서 자주 사용하는 Tailwind CSS 유틸리티 클래스를 용도별로 정리했습니다. 컴포넌트 라이브러리와 함께 사용할 때 팁도 있어요.",
       author: createdUsers[1],
+      tags: ["Tailwind", "디자인"],
     },
     {
       title: "React Query 캐싱 전략",
       content:
         "React Query를 사용할 때 서버 상태와 폼 상태를 어떻게 분리하는지, invalidateQueries를 언제 호출해야 하는지 다룹니다.",
       author: createdUsers[2],
+      tags: ["React Query", "캐싱"],
     },
     {
       title: "JWT 인증 구조 이해하기",
       content:
         "액세스 토큰과 리프레시 토큰을 분리해서 관리할 때 주의해야 할 점과 서버-클라이언트 간 동기화 전략을 공유합니다.",
       author: createdUsers[2],
+      tags: ["인증", "JWT"],
     },
     ...Array.from({ length: 24 }).map((_, index) => {
       const author = createdUsers[index % createdUsers.length];
@@ -86,6 +92,7 @@ async function main() {
         content:
           `${topic} 주제로 프로젝트에서 겪었던 실전 팁을 공유합니다. 케이스 스터디와 함께 리팩터링 아이디어를 정리했습니다.`,
         author,
+        tags: [topic, index % 2 === 0 ? "노하우" : "Best Practices"],
       };
     }),
   ];
@@ -97,6 +104,12 @@ async function main() {
         title: postSeed.title,
         content: postSeed.content,
         authorId: postSeed.author.id,
+        tags: {
+          connectOrCreate: postSeed.tags.map((name) => ({
+            where: { name },
+            create: { name },
+          })),
+        },
       },
     });
 

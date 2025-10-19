@@ -54,7 +54,8 @@
   ```json
   {
     "title": "string",
-    "content": "string"
+    "content": "string",
+    "tags": ["string"]
   }
   ```
 - 응답 Body
@@ -70,12 +71,17 @@
       "id": "string",
       "loginId": "string",
       "nickname": "string"
-    }
+    },
+    "tags": [
+      {
+        "name": "string"
+      }
+    ]
   }
   ```
 
 ### GET `/posts`
-- 쿼리: `page`, `pageSize`
+- 쿼리: `page`, `pageSize`, `keyword`, `tag`
 - 응답 Body
   ```json
   {
@@ -90,7 +96,12 @@
           "id": "string",
           "loginId": "string",
           "nickname": "string"
-        }
+        },
+        "tags": [
+          {
+            "name": "string"
+          }
+        ]
       }
     ],
     "total": 1,
@@ -110,6 +121,11 @@
     "createdAt": "ISO8601",
     "updatedAt": "ISO8601",
     "author": { ... },
+    "tags": [
+      {
+        "name": "string"
+      }
+    ],
     "comments": [
       {
         "id": "string",
@@ -123,6 +139,19 @@
       }
     ]
   }
+  ```
+
+### GET `/posts/tags`
+- 설명: 게시글에 사용된 태그와 게시글 수를 조회합니다.
+- 응답 Body
+  ```json
+  [
+    {
+      "id": "string",
+      "name": "string",
+      "count": 12
+    }
+  ]
   ```
 
 ### PATCH `/posts/:id`

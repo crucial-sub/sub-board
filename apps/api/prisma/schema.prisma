@@ -49,6 +49,7 @@ model Post {
 
   author User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments Comment[]
+  tags     Tag[]
 }
 
 /// 게시글에 달린 댓글을 저장하는 모델
@@ -62,4 +63,12 @@ model Comment {
 
   post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+/// 게시글에 연결되는 태그 정보
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  posts     Post[]
 }

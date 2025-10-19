@@ -16,9 +16,24 @@ export class PostsController {
     return this.postsService.create(user.userId, dto);
   }
 
+  @Get("tags")
+  listTags() {
+    return this.postsService.listTags();
+  }
+
   @Get()
-  findAll(@Query("page") page?: string, @Query("pageSize") pageSize?: string, @Query("keyword") keyword?: string) {
-    return this.postsService.findAll(Number(page ?? "1"), Number(pageSize ?? "10"), keyword?.trim() || undefined);
+  findAll(
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+    @Query("keyword") keyword?: string,
+    @Query("tag") tag?: string,
+  ) {
+    return this.postsService.findAll(
+      Number(page ?? "1"),
+      Number(pageSize ?? "10"),
+      keyword?.trim() || undefined,
+      tag?.trim() || undefined,
+    );
   }
 
   @Get(":id")
