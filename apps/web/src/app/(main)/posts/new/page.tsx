@@ -98,7 +98,7 @@ export default function NewPostPage() {
                 value={tagInput}
                 onChange={(event) => setTagInput(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") {
+                  if (event.key === "Enter" && !(event.nativeEvent as KeyboardEvent).isComposing) {
                     event.preventDefault();
                     handleAddTag();
                   }
