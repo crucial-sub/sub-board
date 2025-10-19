@@ -13,8 +13,22 @@ const NAV_ITEMS = [
 ];
 
 export function SiteHeader() {
+  // Zustand 스토어가 초기 동기화되기 전에는 임시 스켈레톤을 노출한다
   const user = useAuthStore((state) => state.user);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const logoutMutation = useLogoutMutation();
+
+  if (!hasHydrated) {
+    // 초기 렌더에서는 사용자 정보를 아직 모름 → 간단한 로딩 상태로 대체한다
+    return (
+      <header className="border-b border-border-muted bg-white/70 backdrop-blur">
+        <div className="container flex items-center justify-between py-4">
+          <span className="h-5 w-24 animate-pulse rounded bg-border-muted" />
+          <span className="h-5 w-32 animate-pulse rounded bg-border-muted" />
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="border-b border-border-muted bg-white/70 backdrop-blur">
