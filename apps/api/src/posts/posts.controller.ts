@@ -17,8 +17,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query("page") page?: string, @Query("pageSize") pageSize?: string) {
-    return this.postsService.findAll(Number(page ?? "1"), Number(pageSize ?? "10"));
+  findAll(@Query("page") page?: string, @Query("pageSize") pageSize?: string, @Query("keyword") keyword?: string) {
+    return this.postsService.findAll(Number(page ?? "1"), Number(pageSize ?? "10"), keyword?.trim() || undefined);
   }
 
   @Get(":id")

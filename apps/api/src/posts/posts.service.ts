@@ -1,5 +1,6 @@
 // 게시글 CRUD 로직을 담당하는 서비스
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import { CreatePostDto } from "./dto/create-post.dto";
@@ -34,12 +35,29 @@ export class PostsService {
     return post;
   }
 
-  async findAll(page = 1, pageSize = 10) {
+  async findAll(page = 1, pageSize = 10, keyword?: string) {
+    const where = keyword
+      ? {
+          OR: [
+            { title: { contains: keyword, mode: Prisma.QueryMode.insensitive } },
+            { content: { contains: keyword, mode: Prisma.QueryMode.insensitive } },
+            {
+              author: {
+                is: {
+                  nickname: { contains: keyword, mode: Prisma.QueryMode.insensitive },
+                },
+              },
+            },
+          ],
+        }
+      : {};
+
     const [items, total] = await this.prisma.$transaction([
       this.prisma.post.findMany({
         skip: (page - 1) * pageSize,
         take: pageSize,
         orderBy: { createdAt: "desc" },
+        where,
         select: {
           id: true,
           title: true,
@@ -51,7 +69,7 @@ export class PostsService {
           },
         },
       }),
-      this.prisma.post.count(),
+      this.prisma.post.count({ where }),
     ]);
 
     return {
