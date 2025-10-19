@@ -16,5 +16,5 @@ export function createPost(payload: CreatePostPayload) {
 }
 
 export function createComment(payload: CreateCommentPayload) {
-  return apiClient.post<{ id: string }>({ path: `/posts/${payload.postId}/comments`, body: payload });
+  return apiClient.post<{ id: string }>({ path: "/comments", body: payload });
 }
