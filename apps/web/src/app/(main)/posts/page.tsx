@@ -9,7 +9,8 @@ import { PostList } from "@/features/posts/components/post-list";
 const QUICK_KEYWORDS = ["공지", "업데이트", "Q&A", "자유", "스터디"];
 
 export default function PostsPage() {
-  const [keyword, setKeyword] = useState(" ");
+  const [keyword, setKeyword] = useState("");
+  const [page, setPage] = useState(1);
 
   return (
     <section className="space-y-6">
@@ -36,7 +37,10 @@ export default function PostsPage() {
             type="search"
             placeholder="검색어를 입력하세요"
             value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
+            onChange={(event) => {
+              setKeyword(event.target.value);
+              setPage(1);
+            }}
             className="flex-1 rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
           />
           <button
@@ -51,7 +55,10 @@ export default function PostsPage() {
             <button
               key={item}
               type="button"
-              onClick={() => setKeyword(item)}
+              onClick={() => {
+                setKeyword(item);
+                setPage(1);
+              }}
               className="rounded-full border border-border-muted px-3 py-1 text-xs text-text-secondary transition hover:border-brand hover:text-brand"
             >
               #{item}
@@ -60,7 +67,7 @@ export default function PostsPage() {
         </div>
       </header>
 
-      <PostList keyword={keyword.trim() || undefined} />
+      <PostList keyword={keyword} mode="paged" pageSize={12} page={page} onPageChange={setPage} />
     </section>
   );
 }

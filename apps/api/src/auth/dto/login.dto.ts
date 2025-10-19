@@ -3,7 +3,7 @@ import { IsString, MaxLength, MinLength } from "class-validator";
 
 export class LoginDto {
   @IsString({ message: "로그인 ID는 문자열이어야 합니다." })
-  @MinLength(4, { message: "로그인 ID는 최소 4자 이상이어야 합니다." })
+  @MinLength(3, { message: "로그인 ID는 최소 3자 이상이어야 합니다." })
   @MaxLength(20, { message: "로그인 ID는 최대 20자까지 가능합니다." })
   loginId!: string;
 

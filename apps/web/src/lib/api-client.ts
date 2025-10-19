@@ -60,13 +60,15 @@ export class ApiClient {
         markHydrated();
       }
 
-      const message =
-        typeof data === "object" &&
-        data !== null &&
-        "message" in data &&
-        typeof (data as Record<string, unknown>).message === "string"
-          ? (data as { message: string }).message
-          : `API 요청 실패: ${response.status}`;
+      let message = `API 요청 실패: ${response.status}`;
+      if (typeof data === "object" && data !== null && "message" in data) {
+        const rawMessage = (data as Record<string, unknown>).message;
+        if (typeof rawMessage === "string") {
+          message = rawMessage;
+        } else if (Array.isArray(rawMessage)) {
+          message = rawMessage.join("\n");
+        }
+      }
       throw new ApiError(response.status, message, data);
     }
 
