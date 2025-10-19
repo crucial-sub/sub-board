@@ -7,21 +7,32 @@ export default function HomePage() {
   const user = useAuthStore((state) => state.user);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
-  const secondaryCta = !hasHydrated ? null : user ? (
-    <Link
-      href={{ pathname: "/posts/new" }}
-      className="rounded-md border border-border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary shadow-sm transition hover:border-brand hover:text-brand"
-    >
-      새 글 작성
-    </Link>
-  ) : (
-    <Link
-      href={{ pathname: "/login" }}
-      className="rounded-md border border-border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary shadow-sm transition hover:border-brand hover:text-brand"
-    >
-      로그인
-    </Link>
-  );
+  if (hasHydrated && user) {
+    return (
+      <section className="space-y-6 py-10">
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold text-text-primary">안녕하세요, {user.nickname}님!</h1>
+          <p className="max-w-2xl text-lg text-text-secondary">
+            최근 올라온 게시글을 살펴보고 자유롭게 글을 작성해 보세요.
+          </p>
+          <div className="flex gap-3">
+            <Link
+              href={{ pathname: "/posts" }}
+              className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-brand-hover"
+            >
+              최신 게시글 보기
+            </Link>
+            <Link
+              href={{ pathname: "/posts/new" }}
+              className="rounded-md border border-border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary shadow-sm transition hover:border-brand hover:text-brand"
+            >
+              새 글 작성하기
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="space-y-6 py-10">
@@ -38,7 +49,14 @@ export default function HomePage() {
           >
             게시판 바로가기
           </Link>
-          {secondaryCta}
+          {hasHydrated ? (
+            <Link
+              href={{ pathname: "/login" }}
+              className="rounded-md border border-border-muted bg-white px-4 py-2 text-sm font-semibold text-text-primary shadow-sm transition hover:border-brand hover:text-brand"
+            >
+              로그인
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>
