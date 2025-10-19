@@ -11,7 +11,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src", "test"],
+  "include": ["src", "test", "scripts"],
   "exclude": ["dist", "node_modules"],
   "references": [
     {
