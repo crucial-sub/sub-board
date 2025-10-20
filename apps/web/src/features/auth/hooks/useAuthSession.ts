@@ -6,25 +6,25 @@ import { refreshSession } from "../api";
 import { useAuthStore } from "../state/auth-store";
 
 export function useAuthSession() {
-  const hasHydrated = useAuthStore((state) => state.hasHydrated);
-  const setFromResponse = useAuthStore((state) => state.setFromResponse);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
-  const markHydrated = useAuthStore((state) => state.markHydrated);
+	const hasHydrated = useAuthStore((state) => state.hasHydrated);
+	const setFromResponse = useAuthStore((state) => state.setFromResponse);
+	const clearAuth = useAuthStore((state) => state.clearAuth);
+	const markHydrated = useAuthStore((state) => state.markHydrated);
 
-  useEffect(() => {
-    if (hasHydrated) {
-      return;
-    }
+	useEffect(() => {
+		if (hasHydrated) {
+			return;
+		}
 
-    refreshSession()
-      .then((response) => {
-        setFromResponse(response);
-      })
-      .catch(() => {
-        clearAuth();
-      })
-      .finally(() => {
-        markHydrated();
-      });
-  }, [clearAuth, hasHydrated, markHydrated, setFromResponse]);
+		refreshSession()
+			.then((response) => {
+				setFromResponse(response);
+			})
+			.catch(() => {
+				clearAuth();
+			})
+			.finally(() => {
+				markHydrated();
+			});
+	}, [clearAuth, hasHydrated, markHydrated, setFromResponse]);
 }

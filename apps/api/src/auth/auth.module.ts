@@ -11,25 +11,29 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 
 @Module({
-  imports: [
-    UsersModule,
-    PrismaModule,
-    PassportModule.register({ defaultStrategy: "jwt" }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const secret = configService.get<string>("JWT_ACCESS_SECRET") ?? "test-access-secret";
-        const expiresIn = Number(configService.get<string>("JWT_ACCESS_EXPIRES_IN") ?? "900");
-        return {
-          secret,
-          signOptions: { expiresIn },
-        };
-      },
-    }),
-  ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard],
-  exports: [AuthService, JwtAuthGuard],
+	imports: [
+		UsersModule,
+		PrismaModule,
+		PassportModule.register({ defaultStrategy: "jwt" }),
+		JwtModule.registerAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: (configService: ConfigService) => {
+				const secret =
+					configService.get<string>("JWT_ACCESS_SECRET") ??
+					"test-access-secret";
+				const expiresIn = Number(
+					configService.get<string>("JWT_ACCESS_EXPIRES_IN") ?? "900",
+				);
+				return {
+					secret,
+					signOptions: { expiresIn },
+				};
+			},
+		}),
+	],
+	controllers: [AuthController],
+	providers: [AuthService, JwtStrategy, JwtAuthGuard],
+	exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

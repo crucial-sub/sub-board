@@ -1,7 +1,7 @@
 {
-  "name": "@sub-board/shared",
-  "version": "0.0.0",
-  "private": true,
-  "main": "src/index.ts",
-  "type": "module"
+	"name": "@sub-board/shared",
+	"version": "0.0.0",
+	"private": true,
+	"main": "src/index.ts",
+	"type": "module"
 }

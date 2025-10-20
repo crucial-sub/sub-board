@@ -2,24 +2,24 @@
 import { apiClient } from "@/lib/api-client";
 
 export type CreatePostPayload = {
-  title: string;
-  content: string;
-  tags?: string[];
+	title: string;
+	content: string;
+	tags?: string[];
 };
 
 export type CreateCommentPayload = {
-  postId: string;
-  content: string;
+	postId: string;
+	content: string;
 };
 
 export function createPost(payload: CreatePostPayload) {
-  return apiClient.post<{ id: string }>({ path: "/posts", body: payload });
+	return apiClient.post<{ id: string }>({ path: "/posts", body: payload });
 }
 
 export function createComment(payload: CreateCommentPayload) {
-  return apiClient.post<{ id: string }>({ path: "/comments", body: payload });
+	return apiClient.post<{ id: string }>({ path: "/comments", body: payload });
 }
 
 export function deleteComment(commentId: string) {
-  return apiClient.delete<{ id: string }>(`/comments/${commentId}`);
+	return apiClient.delete<{ id: string }>(`/comments/${commentId}`);
 }

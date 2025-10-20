@@ -1,59 +1,63 @@
 // 댓글 CRUD 로직을 담당하는 서비스
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+	ForbiddenException,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import type { CreateCommentDto } from "./dto/create-comment.dto";
 
 @Injectable()
 export class CommentsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
-  ) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly usersService: UsersService,
+	) {}
 
-  async create(authorId: string, dto: CreateCommentDto) {
-    const [post, author] = await Promise.all([
-      this.prisma.post.findUnique({ where: { id: dto.postId } }),
-      this.usersService.findById(authorId),
-    ]);
+	async create(authorId: string, dto: CreateCommentDto) {
+		const [post, author] = await Promise.all([
+			this.prisma.post.findUnique({ where: { id: dto.postId } }),
+			this.usersService.findById(authorId),
+		]);
 
-    if (!post) {
-      throw new NotFoundException("게시글을 찾을 수 없습니다.");
-    }
-    if (!author) {
-      throw new NotFoundException("작성자를 찾을 수 없습니다.");
-    }
+		if (!post) {
+			throw new NotFoundException("게시글을 찾을 수 없습니다.");
+		}
+		if (!author) {
+			throw new NotFoundException("작성자를 찾을 수 없습니다.");
+		}
 
-    return this.prisma.comment.create({
-      data: {
-        postId: dto.postId,
-        authorId,
-        content: dto.content,
-      },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        author: {
-          select: { id: true, loginId: true, nickname: true },
-        },
-      },
-    });
-  }
+		return this.prisma.comment.create({
+			data: {
+				postId: dto.postId,
+				authorId,
+				content: dto.content,
+			},
+			select: {
+				id: true,
+				content: true,
+				createdAt: true,
+				author: {
+					select: { id: true, loginId: true, nickname: true },
+				},
+			},
+		});
+	}
 
-  async remove(commentId: string, authorId: string) {
-    const comment = await this.prisma.comment.findUnique({
-      where: { id: commentId },
-      select: { authorId: true },
-    });
-    if (!comment) {
-      throw new NotFoundException("댓글을 찾을 수 없습니다.");
-    }
-    if (comment.authorId !== authorId) {
-      throw new ForbiddenException("댓글을 삭제할 권한이 없습니다.");
-    }
+	async remove(commentId: string, authorId: string) {
+		const comment = await this.prisma.comment.findUnique({
+			where: { id: commentId },
+			select: { authorId: true },
+		});
+		if (!comment) {
+			throw new NotFoundException("댓글을 찾을 수 없습니다.");
+		}
+		if (comment.authorId !== authorId) {
+			throw new ForbiddenException("댓글을 삭제할 권한이 없습니다.");
+		}
 
-    await this.prisma.comment.delete({ where: { id: commentId } });
-    return { id: commentId };
-  }
+		await this.prisma.comment.delete({ where: { id: commentId } });
+		return { id: commentId };
+	}
 }

@@ -7,12 +7,14 @@ import { useState } from "react";
 type Props = { children: React.ReactNode };
 
 export function ReactQueryProvider({ children }: Props) {
-  const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(() => new QueryClient());
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      {process.env.NODE_ENV === "development" ? <ReactQueryDevtools initialIsOpen={false} /> : null}
-    </QueryClientProvider>
-  );
+	return (
+		<QueryClientProvider client={queryClient}>
+			{children}
+			{process.env.NODE_ENV === "development" ? (
+				<ReactQueryDevtools initialIsOpen={false} />
+			) : null}
+		</QueryClientProvider>
+	);
 }

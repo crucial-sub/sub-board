@@ -8,19 +8,19 @@ import { PostsModule } from "./posts/posts.module";
 import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
-  imports: [
-    // 환경 변수 관리를 전역으로 설정하여 어디서든 주입받을 수 있게 한다
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: [".env", "../../.env"],
-    }),
-    PrismaModule,
-    AuthModule,
-    PostsModule,
-    CommentsModule,
-    HealthModule,
-  ],
-  controllers: [],
-  providers: [],
+	imports: [
+		// 환경 변수 관리를 전역으로 설정하여 어디서든 주입받을 수 있게 한다
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: [".env", "../../.env"],
+		}),
+		PrismaModule,
+		AuthModule,
+		PostsModule,
+		CommentsModule,
+		HealthModule,
+	],
+	controllers: [],
+	providers: [],
 })
 export class AppModule {}

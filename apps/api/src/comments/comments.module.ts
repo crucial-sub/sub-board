@@ -6,9 +6,9 @@ import { CommentsController } from "./comments.controller";
 import { CommentsService } from "./comments.service";
 
 @Module({
-  imports: [PrismaModule, UsersModule],
-  controllers: [CommentsController],
-  providers: [CommentsService],
-  exports: [CommentsService],
+	imports: [PrismaModule, UsersModule],
+	controllers: [CommentsController],
+	providers: [CommentsService],
+	exports: [CommentsService],
 })
 export class CommentsModule {}
