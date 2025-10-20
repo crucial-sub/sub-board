@@ -1,14 +1,14 @@
 # 프론트엔드 인증 흐름 정리
 
 ## 1. 인증 상태 저장소
-- `apps/web/src/features/auth/state/auth-store.ts`
+- `apps/web/src/features/auth/state/auth-store.tsx`
 - Zustand 스토어에 `user`, `hasHydrated` 상태를 보관
 - 서버에서 받아온 `AuthResponse`로 `setFromResponse`, 로그아웃 시 `clearAuth`
 
 ## 2. 초기 세션 동기화
-- `UiProvider`에서 `useAuthSession` 훅을 실행
-- `GET /auth/refresh` 대신 `POST /auth/refresh` 호출로 액세스/리프레시 쿠키 재발급 시도
-- 성공 시 사용자 정보 저장, 실패 시 `clearAuth` 후 `hasHydrated` 플래그 설정
+- `app/layout.tsx`에서 서버 전용 헬퍼 `getCurrentUserOnServer()` 실행
+- 우선 `GET /auth/profile`로 액세스 토큰을 검증하고, 만료 시 `POST /auth/refresh`로 새 토큰을 발급받는다
+- 갱신된 토큰은 Next.js `cookies().set`으로 응답 쿠키에 반영하고, 받은 사용자 정보를 `UiProvider` → `AuthStoreProvider`에 초기 상태로 주입한다
 
 ## 3. 로그인/회원가입 흐름
 - `useLoginMutation`, `useRegisterMutation`

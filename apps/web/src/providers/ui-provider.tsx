@@ -1,9 +1,20 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
+import type { AuthResponse } from "@/features/auth/api";
+import { AuthStoreProvider } from "@/features/auth/state/auth-store";
 
-export function UiProvider({ children }: { children: ReactNode }) {
-	useAuthSession();
-	return children;
+type Props = {
+	children: ReactNode;
+	initialUser: AuthResponse["user"] | null;
+};
+
+export function UiProvider({ children, initialUser }: Props) {
+	return (
+		<AuthStoreProvider
+			initialState={{ user: initialUser, hasHydrated: true }}
+		>
+			{children}
+		</AuthStoreProvider>
+	);
 }

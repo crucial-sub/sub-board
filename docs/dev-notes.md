@@ -136,14 +136,14 @@ model Comment {
 # 프론트엔드 인증 흐름 정리
 
 ## 1. 인증 상태 저장소
-- `apps/web/src/features/auth/state/auth-store.ts`
+- `apps/web/src/features/auth/state/auth-store.tsx`
 - Zustand 스토어에 `user`, `hasHydrated` 상태를 보관
 - 서버에서 받아온 `AuthResponse`로 `setFromResponse`, 로그아웃 시 `clearAuth`
 
 ## 2. 초기 세션 동기화
-- `UiProvider`에서 `useAuthSession` 훅을 실행
-- `GET /auth/refresh` 대신 `POST /auth/refresh` 호출로 액세스/리프레시 쿠키 재발급 시도
-- 성공 시 사용자 정보 저장, 실패 시 `clearAuth` 후 `hasHydrated` 플래그 설정
+- `app/layout.tsx`에서 서버 전용 헬퍼 `getCurrentUserOnServer()` 실행
+- 우선 `GET /auth/profile`로 액세스 토큰을 검증하고, 만료 시 `POST /auth/refresh`로 새 토큰을 발급받는다
+- 갱신된 토큰은 Next.js `cookies().set`으로 응답 쿠키에 반영하고, 받은 사용자 정보를 `UiProvider` → `AuthStoreProvider`에 초기 상태로 주입한다
 
 ## 3. 로그인/회원가입 흐름
 - `useLoginMutation`, `useRegisterMutation`
@@ -182,7 +182,7 @@ model Comment {
 - 게시글/댓글 작성 폼은 서버에서 내려온 에러 메시지를 그대로 표시해 사용자에게 원인을 안내한다.
 - 댓글 작성 API 경로를 `/comments`로 통일해 백엔드 엔드포인트와 어긋나던 문제를 해결했다.
 - 댓글 상세 화면에서는 댓글 작성자가 자신의 댓글을 삭제할 수 있도록 버튼과 뮤테이션(`useDeleteComment`)을 추가했다.
-- 전역 헤더는 인증 스토어가 동기화되기 전까지 스켈레톤을 보여주고, 로그인 상태가 결정된 뒤에만 로그아웃/로그인 버튼을 렌더링한다.
+- 전역 헤더는 서버에서 전달된 초기 세션으로 바로 렌더되어 깜빡임 없이 로그인/로그아웃 버튼을 노출한다.
 - 메인 홈 Hero 섹션은 인증 상태에 따라 CTA를 바꿔 표시하며, hydrates 되기 전에는 추가 버튼을 숨긴다.
 - 게시판 페이지는 태그 필터 UI로 교체해 각 태그별 게시글 수를 표시하고, 선택한 태그만 목록에 보여준다.
 - 홈 화면은 로그인 여부에 따라 Hero 메시지를 분리해, 로그인 사용자는 최신 게시글 / 새 글 작성 CTA를 바로 볼 수 있도록 개선했다.

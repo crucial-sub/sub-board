@@ -56,8 +56,9 @@ apps/web/src
 │  ├─ auth               # 인증 도메인
 │  │  ├─ api.ts          # 인증 API 래퍼 (login, register 등)
 │  │  ├─ components      # AuthForm 등 인증 UI 조각
-│  │  ├─ hooks           # useAuthSession, useAuthGuard, useAuthMutations
-│  │  └─ state           # Zustand 스토어 (useAuthStore)
+│  │  ├─ hooks           # useAuthGuard, useAuthMutations
+│  │  ├─ server          # SSR 인증 유틸 (getCurrentUserOnServer)
+│  │  └─ state           # Zustand 스토어 Provider (AuthStoreProvider)
 │  └─ posts              # 게시글 도메인
 │     ├─ api.ts          # 게시글/댓글 API 래퍼
 │     ├─ components      # PostCard, PostDetail, CommentForm, PostList 등
@@ -80,11 +81,13 @@ apps/web/src
 
 ### `app/layout.tsx`
 ```tsx
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const currentUser = await getCurrentUserOnServer();
+
   return (
     <html lang="ko">
       <body className="bg-bg-app text-text-primary">
-        <UiProvider>
+        <UiProvider initialUser={currentUser}>
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </UiProvider>
       </body>
@@ -92,7 +95,7 @@ export default function RootLayout({ children }) {
   );
 }
 ```
-- **UiProvider** (`providers/ui-provider.tsx`): 내부에서 `useAuthSession()` 커스텀 훅을 호출해 앱 시작 시 인증 세션을 동기화한다.
+- **UiProvider** (`providers/ui-provider.tsx`): 서버에서 전달한 `currentUser`를 `AuthStoreProvider` 초기 상태로 주입해 첫 렌더부터 로그인 상태가 유지된다.
 - **ReactQueryProvider** (`providers/react-query-provider.tsx`): React Query 클라이언트를 생성하고 `QueryClientProvider`로 감싼다.  
 - Tailwind 기본 배경/텍스트 색상을 `<body>`에 적용.
 
@@ -104,7 +107,7 @@ export default function RootLayout({ children }) {
 - `"use client"` 선언 → 클라이언트에서만 렌더.  
 - `useAuthStore`로 로그인 상태와 hydration 여부를 읽고, 로그인 여부에 따라 버튼을 분기한다.  
 - `logout` 버튼 클릭 시 `useLogoutMutation` → `/auth/logout` 호출 후 Zustand 스토어 초기화.
-- hydration 전에는 스켈레톤(`animate-pulse`)으로 표시 → 초기 로딩 상태를 깔끔하게 처리.
+- 기본적으로 서버에서 전달된 세션으로 즉시 실제 UI를 렌더하며, 예외적으로 `hasHydrated`가 `false`인 경우에만 스켈레톤(`animate-pulse`)을 노출한다.
 
 ### Tailwind 사용 패턴
 - `className="border-b border-border-muted bg-white/70 backdrop-blur"`처럼 여러 유틸 클래스를 조합.  
@@ -115,15 +118,16 @@ export default function RootLayout({ children }) {
 
 ## 5. 인증 도메인 (`features/auth`)
 
-### `state/auth-store.ts`
+### `state/auth-store.tsx`
+- `AuthStoreProvider`가 서버에서 전달한 초기 세션으로 스토어를 생성해 첫 렌더부터 `hasHydrated` 상태를 true로 맞춘다.  
 앞서 언급한 Zustand 스토어. 주요 액션:
 - `setFromResponse(payload)`: 로그인/회원가입/리프레시 응답을 상태에 저장.
 - `clearAuth()`: 로그아웃 혹은 401 발생 시 사용자 정보 제거.
 - `markHydrated()`: 세션 동기화 완료 플래그 (헤더가 로딩 상태를 판단하는 데 사용).
 
-### `hooks/useAuthSession.ts`
-- 앱 시작 시 `refreshSession()` API 호출 → 성공 시 `setFromResponse`, 실패 시 `clearAuth`.  
-- `hasHydrated`가 true가 될 때까지 헤더는 스켈레톤 상태 → 깜박이는 현상 방지.
+### `server/get-current-user.ts`
+- `getCurrentUserOnServer()`가 SSR 단계에서 현재 세션을 조회한다.  
+- `GET /auth/profile`로 액세스 토큰을 검증하고, 401이면 `POST /auth/refresh`를 호출해 토큰을 재발급한 뒤 Next.js 응답 쿠키에 반영한다.
 
 ### `hooks/useAuthMutations.ts`
 - `useRegisterMutation`, `useLoginMutation`, `useLogoutMutation`, `useHydrateAuthSession` 등.  
@@ -229,9 +233,9 @@ useMutation({
 
 | 훅 | 위치 | 역할 |
 |----|------|------|
-| `useAuthSession` | `features/auth/hooks/useAuthSession.ts` | 앱 시작 시 `/auth/refresh` 호출, 인증 상태 hydrate |
 | `useAuthGuard` | `features/auth/hooks/useAuthGuard.ts` | 보호 페이지에서 로그인 상태 확인, 없으면 `/login` 이동 |
 | `useAuthMutations` | `features/auth/hooks/useAuthMutations.ts` | 로그인/회원가입/로그아웃 mutation |
+| `useHydrateAuthSession` | `features/auth/hooks/useAuthMutations.ts` | 필요 시 `/auth/refresh`로 세션 갱신 |
 | `usePostsQuery` | `hooks/usePostsQuery.ts` | 페이지네이션 목록 fetch |
 | `usePostsInfiniteQuery` | 동일 | 무한 스크롤 fetch |
 | `usePostDetailQuery` | `features/posts/hooks/usePostDetailQuery.ts` | 게시글 상세 데이터 fetch |
@@ -250,6 +254,7 @@ useMutation({
 |------------|------|------|
 | `/auth/register` | POST | 회원가입, 성공 시 토큰 + 쿠키 세팅 |
 | `/auth/login` | POST | 로그인, 토큰 재발급 + 쿠키 갱신 |
+| `/auth/profile` | GET | 액세스 토큰으로 현재 사용자 조회 |
 | `/auth/refresh` | POST | 리프레시 토큰 기반 재발급 |
 | `/auth/logout` | POST | 세션 삭제, 쿠키 초기화 |
 | `/posts` | GET | 게시글 목록 (`page`, `pageSize`, `keyword`, `tag`) |

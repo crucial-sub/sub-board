@@ -1,7 +1,7 @@
 "use client";
 
 // 공통 fetch 로직을 담당하며 인증 쿠키 처리와 에러 정리를 담당한다
-import { useAuthStore } from "@/features/auth/state/auth-store";
+import { getAuthStoreClient } from "@/features/auth/state/auth-store";
 
 // API 실패 시 상태 코드와 응답 본문을 묶어서 전달하는 에러 클래스
 export class ApiError<T = unknown> extends Error {
@@ -69,7 +69,7 @@ export class ApiClient {
 		if (!response.ok) {
 			if (response.status === 401) {
 				// 인증 만료 응답이 오면 클라이언트 세션을 초기화해 UI를 동기화한다
-				const { clearAuth, markHydrated } = useAuthStore.getState();
+				const { clearAuth, markHydrated } = getAuthStoreClient().getState();
 				clearAuth();
 				markHydrated();
 			}

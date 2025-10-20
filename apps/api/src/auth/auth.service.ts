@@ -133,6 +133,15 @@ export class AuthService {
 		await this.prisma.session.deleteMany({ where: { userId } });
 	}
 
+	// 현재 로그인한 사용자의 공개 프로필을 반환한다
+	async getProfile(userId: string): Promise<PublicUser> {
+		const user = await this.usersService.findById(userId);
+		if (!user) {
+			throw new UnauthorizedException("사용자를 찾을 수 없습니다.");
+		}
+		return user;
+	}
+
 	// 저장된 세션 중 전달된 리프레시 토큰과 일치하는 항목을 찾는다
 	private async findMatchingSession(userId: string, refreshToken: string) {
 		const sessions = await this.prisma.session.findMany({ where: { userId } });

@@ -4,6 +4,7 @@ import {
 	Controller,
 	HttpCode,
 	HttpStatus,
+	Get,
 	Post,
 	Req,
 	Res,
@@ -98,6 +99,14 @@ export class AuthController {
 		await this.authService.logout(user.userId);
 		this.clearAuthCookies(response);
 		return { success: true };
+	}
+
+	// 액세스 토큰으로 현재 로그인한 사용자를 조회한다
+	@Get("profile")
+	@UseGuards(JwtAuthGuard)
+	async profile(@CurrentUser() user: { userId: string }) {
+		const profile = await this.authService.getProfile(user.userId);
+		return { user: profile };
 	}
 
 	private setAuthCookies(response: Response, tokens: AuthTokens) {
