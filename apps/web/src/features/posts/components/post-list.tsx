@@ -67,7 +67,7 @@ function InfinitePostList({
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-24 animate-pulse rounded-lg bg-border-muted"
+						className="h-24 animate-pulse rounded-2xl border border-border-muted bg-white/60"
 					/>
 				))}
 			</div>
@@ -88,7 +88,7 @@ function InfinitePostList({
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 				{posts.map((post) => (
 					<PostCard key={post.id} {...post} />
 				))}
@@ -100,7 +100,7 @@ function InfinitePostList({
 						type="button"
 						onClick={() => void fetchNextPage()}
 						disabled={isFetchingNextPage}
-						className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-card transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+						className="btn-gradient disabled:cursor-not-allowed disabled:opacity-60"
 					>
 						{isFetchingNextPage ? "불러오는 중..." : "더 보기"}
 					</button>
@@ -160,7 +160,7 @@ function PagedPostList({
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-24 animate-pulse rounded-lg bg-border-muted"
+						className="h-24 animate-pulse rounded-2xl border border-border-muted bg-white/60"
 					/>
 				))}
 			</div>
@@ -181,7 +181,7 @@ function PagedPostList({
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 				{posts.map((post) => (
 					<PostCard key={post.id} {...post} />
 				))}
@@ -192,7 +192,7 @@ function PagedPostList({
 					type="button"
 					onClick={() => setPage(Math.max(1, activePage - 1))}
 					disabled={activePage === 1}
-					className="rounded-md border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+					className="rounded-full border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					이전
 				</button>
@@ -201,7 +201,7 @@ function PagedPostList({
 						key={pageNumber}
 						type="button"
 						onClick={() => setPage(pageNumber)}
-						className={`rounded-md px-3 py-1 text-sm transition ${
+						className={`rounded-full px-3 py-1 text-sm transition ${
 							pageNumber === activePage
 								? "bg-brand text-white shadow-card"
 								: "border border-border-muted text-text-secondary hover:border-brand hover:text-brand"
@@ -214,7 +214,7 @@ function PagedPostList({
 					type="button"
 					onClick={() => setPage(Math.min(totalPages, activePage + 1))}
 					disabled={activePage === totalPages}
-					className="rounded-md border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+					className="rounded-full border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					다음
 				</button>

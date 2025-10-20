@@ -48,7 +48,7 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
 					required
 					value={loginId}
 					onChange={(event) => setLoginId(event.target.value)}
-					className="w-full rounded-md border border-border-muted bg-white px-3 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+					className="w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 				/>
 			</div>
 
@@ -66,7 +66,7 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
 						required
 						value={nickname}
 						onChange={(event) => setNickname(event.target.value)}
-						className="w-full rounded-md border border-border-muted bg-white px-3 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+						className="w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 					/>
 				</div>
 			) : null}
@@ -84,16 +84,18 @@ export function AuthForm({ mode }: { mode: AuthFormMode }) {
 					required
 					value={password}
 					onChange={(event) => setPassword(event.target.value)}
-					className="w-full rounded-md border border-border-muted bg-white px-3 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+					className="w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 				/>
 			</div>
 
-			{error ? <p className="text-sm text-red-500">{error.message}</p> : null}
+			{error ? (
+				<p className="text-sm text-red-600">{error.message}</p>
+			) : null}
 
 			<button
 				type="submit"
 				disabled={isLoading}
-				className="w-full rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-card transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+				className="btn-gradient flex w-full justify-center disabled:cursor-not-allowed disabled:opacity-60"
 			>
 				{isRegister ? "회원가입" : "로그인"}
 			</button>

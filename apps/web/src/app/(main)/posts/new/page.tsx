@@ -8,8 +8,8 @@ import { useAuthGuard } from "@/features/auth/hooks/useAuthGuard";
 
 export default function NewPostPage() {
 	useAuthGuard();
-	const [title, setTitle] = useState(" ");
-	const [content, setContent] = useState(" ");
+	const [title, setTitle] = useState("");
+	const [content, setContent] = useState("");
 	const [tagInput, setTagInput] = useState("");
 	const [tags, setTags] = useState<string[]>([]);
 	// 각 입력 필드는 useId로 생성된 고유 ID를 사용해 중복을 방지한다
@@ -45,8 +45,8 @@ export default function NewPostPage() {
 			content: content.trim(),
 			tags,
 		});
-		setTitle(" ");
-		setContent(" ");
+		setTitle("");
+		setContent("");
 		setTags([]);
 		setTagInput("");
 		if (result?.id) {
@@ -57,16 +57,21 @@ export default function NewPostPage() {
 	};
 
 	return (
-		<section className="space-y-6">
-			<header className="space-y-2">
-				<h1 className="text-2xl font-semibold text-text-primary">새 글 작성</h1>
+		<section className="space-y-8">
+			<header className="surface-card space-y-3 px-8 py-10">
+				<p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand">
+					Write and share
+				</p>
+				<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
+					<span className="gradient-text">새 글 작성</span>
+				</h1>
 				<p className="text-text-secondary">
 					게시판에 공유하고 싶은 내용을 작성하세요.
 				</p>
 			</header>
 
-			<form onSubmit={handleSubmit} className="space-y-4">
-				<div className="space-y-2">
+			<form onSubmit={handleSubmit} className="surface-card space-y-6 px-8 py-10">
+				<div className="space-y-3">
 					<label
 						className="text-sm font-medium text-text-secondary"
 						htmlFor={titleInputId}
@@ -78,11 +83,11 @@ export default function NewPostPage() {
 						type="text"
 						value={title}
 						onChange={(event) => setTitle(event.target.value)}
-						className="w-full rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+						className="w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 						required
 					/>
 				</div>
-				<div className="space-y-2">
+				<div className="space-y-3">
 					<label
 						className="text-sm font-medium text-text-secondary"
 						htmlFor={contentInputId}
@@ -93,20 +98,20 @@ export default function NewPostPage() {
 						id={contentInputId}
 						value={content}
 						onChange={(event) => setContent(event.target.value)}
-						className="min-h-[200px] w-full rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+						className="min-h-[220px] w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 						required
 					/>
 				</div>
 
-				<div className="space-y-2">
+				<div className="space-y-3">
 					<label
 						className="text-sm font-medium text-text-secondary"
 						htmlFor={tagInputId}
 					>
 						태그
 					</label>
-					<div className="space-y-2">
-						<div className="flex items-center gap-2">
+					<div className="space-y-3">
+						<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
 							<input
 								id={tagInputId}
 								type="text"
@@ -122,12 +127,12 @@ export default function NewPostPage() {
 									}
 								}}
 								placeholder="태그를 입력하고 Enter를 눌러 추가하세요 (최대 10개)"
-								className="flex-1 rounded-md border border-border-muted bg-white px-4 py-2 text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+								className="flex-1 rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
 							/>
 							<button
 								type="button"
 								onClick={handleAddTag}
-								className="rounded-md border border-border-muted bg-white px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand hover:text-brand"
+								className="btn-outline flex w-full justify-center sm:w-auto"
 							>
 								추가
 							</button>
@@ -135,15 +140,12 @@ export default function NewPostPage() {
 						{tags.length ? (
 							<div className="flex flex-wrap gap-2">
 								{tags.map((tag) => (
-									<span
-										key={tag}
-										className="inline-flex items-center gap-2 rounded-full border border-border-muted bg-white px-3 py-1 text-xs text-text-secondary"
-									>
+									<span key={tag} className="tag">
 										#{tag}
 										<button
 											type="button"
 											onClick={() => handleRemoveTag(tag)}
-											className="text-text-tertiary transition hover:text-red-500"
+											className="text-text-secondary transition hover:text-red-400"
 										>
 											제거
 										</button>
@@ -151,7 +153,7 @@ export default function NewPostPage() {
 								))}
 							</div>
 						) : (
-							<p className="text-xs text-text-tertiary">
+							<p className="text-xs text-text-secondary">
 								태그는 검색과 필터링에 사용됩니다. 예: 프론트엔드, 성능, Q&A
 							</p>
 						)}
@@ -159,13 +161,13 @@ export default function NewPostPage() {
 				</div>
 
 				{mutation.error ? (
-					<p className="text-sm text-red-500">{errorMessage}</p>
+					<p className="text-sm text-red-400">{errorMessage}</p>
 				) : null}
 
 				<button
 					type="submit"
 					disabled={mutation.isPending}
-					className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white shadow-card transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+					className="btn-gradient disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					작성하기
 				</button>

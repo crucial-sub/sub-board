@@ -31,48 +31,49 @@ export default function PostsPage() {
 	}, [tags]);
 
 	return (
-		<section className="space-y-6">
-			<header className="space-y-5">
-				<div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-					<div className="space-y-2">
-						<h1 className="text-3xl font-bold text-text-primary">게시판</h1>
-						<p className="text-text-secondary">
-							최신 글을 확인하고 관심 있는 태그로 필터링해보세요.{" "}
+		<section className="space-y-8">
+			<header className="surface-card space-y-6 px-8 py-10">
+				<div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+					<div className="space-y-3">
+						<p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand">
+							Community Feed
+						</p>
+						<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
+							<span className="gradient-text">게시판 라이브 스트림</span>
+						</h1>
+						<p className="max-w-2xl text-sm text-text-secondary">
 							{selectedTag
-								? `현재 선택된 태그: #${selectedTag}`
-								: "전체 게시글을 보여주는 중입니다."}
+								? `현재 #${selectedTag} 태그에 맞춘 게시글을 보고 있어요.`
+								: "인기 태그와 최신 게시글을 한눈에 살펴보세요."}
 						</p>
 					</div>
-					<Link
-						href="/posts/new"
-						className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-card transition hover:bg-brand-hover"
-					>
+					<Link href="/posts/new" className="btn-gradient">
 						새 글 작성하기
 					</Link>
 				</div>
 
-				<div className="space-y-2">
-					<p className="text-xs font-medium text-text-secondary">
-						태그로 필터링
+				<div className="space-y-3">
+					<p className="text-xs font-medium uppercase tracking-[0.3em] text-text-subtle">
+						태그 필터링
 					</p>
-					<div className="flex flex-wrap gap-2">
+					<div className="flex flex-wrap gap-3">
 						<button
 							type="button"
 							onClick={() => {
 								setSelectedTag(undefined);
 								setPage(1);
 							}}
-							className={`rounded-full px-3 py-1 text-xs transition ${
+							className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
 								selectedTag === undefined
 									? "bg-brand text-white shadow-card"
-									: "border border-border-muted text-text-secondary hover:border-brand hover:text-brand"
+									: "border border-border-default text-text-secondary hover:border-brand hover:text-brand"
 							}`}
 							disabled={isTagsLoading}
 						>
 							전체 보기
 						</button>
 						{isTagsLoading ? (
-							<span className="h-5 w-24 animate-pulse rounded bg-border-muted" />
+							<span className="h-7 w-24 animate-pulse rounded-full border border-border-muted bg-white/60" />
 						) : null}
 						{tagButtons.map((tag) => (
 							<button
@@ -84,10 +85,10 @@ export default function PostsPage() {
 									);
 									setPage(1);
 								}}
-								className={`rounded-full px-3 py-1 text-xs transition ${
+								className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
 									selectedTag === tag.name
 										? "bg-brand text-white shadow-card"
-										: "border border-border-muted text-text-secondary hover:border-brand hover:text-brand"
+										: "border border-border-default text-text-secondary hover:border-brand hover:text-brand"
 								}`}
 							>
 								#{tag.name} ({tag.count})

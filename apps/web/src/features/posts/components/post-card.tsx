@@ -26,24 +26,27 @@ export function PostCard({
 	const created = new Date(createdAt);
 
 	return (
-		<article className="space-y-3 rounded-lg border border-border-muted bg-white p-5 shadow-card transition hover:shadow-popover">
+		<article className="surface-glass group relative overflow-hidden p-5 transition hover:border-brand/60 hover:shadow-popover">
+			<div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 w-full bg-gradient-to-r from-brand via-[var(--accent-cyan)] to-[var(--accent-pink)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 			<div className="flex items-center justify-between text-xs text-text-secondary">
 				<span>{author.nickname}</span>
 				<span>{created.toLocaleString()}</span>
 			</div>
-			<h2 className="text-lg font-semibold text-text-primary">
-				<Link href={`/posts/${id}`}>{title}</Link>
+			<h2 className="mt-3 text-lg font-semibold text-text-primary">
+				<Link
+					href={`/posts/${id}`}
+					className="transition hover:text-brand"
+				>
+					{title}
+				</Link>
 			</h2>
-			<div className="text-xs text-text-secondary">
+			<div className="mt-2 text-xs text-text-secondary">
 				조회수 {viewCount.toLocaleString()}
 			</div>
 			{tags?.length ? (
-				<div className="flex flex-wrap gap-2 text-[10px] text-text-tertiary">
+				<div className="mt-4 flex flex-wrap gap-2 text-[10px] text-text-secondary/80">
 					{tags.map((tag) => (
-						<span
-							key={tag.name}
-							className="rounded-full border border-border-muted px-2 py-0.5"
-						>
+						<span key={tag.name} className="tag">
 							#{tag.name}
 						</span>
 					))}

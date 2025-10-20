@@ -21,41 +21,45 @@ export function SiteHeader() {
 	if (!hasHydrated) {
 		// 초기 렌더에서는 사용자 정보를 아직 모름 → 간단한 로딩 상태로 대체한다
 		return (
-			<header className="border-b border-border-muted bg-white/70 backdrop-blur">
+			<header className="border-b border-white/60 bg-white/70 backdrop-blur-2xl">
 				<div className="container flex items-center justify-between py-4">
-					<span className="h-5 w-24 animate-pulse rounded bg-border-muted" />
-					<span className="h-5 w-32 animate-pulse rounded bg-border-muted" />
+					<span className="h-5 w-24 animate-pulse rounded bg-white/60" />
+					<span className="h-5 w-32 animate-pulse rounded bg-white/60" />
 				</div>
 			</header>
 		);
 	}
 
 	return (
-		<header className="border-b border-border-muted bg-white/70 backdrop-blur">
+		<header className="sticky top-0 z-30 border-b border-white/60 bg-white/70 shadow-card backdrop-blur-2xl">
 			<div className="container flex items-center justify-between py-4">
-				<Link href="/" className="text-lg font-semibold text-text-primary">
+				<Link
+					href="/"
+					className="text-base font-semibold tracking-tight text-text-primary transition hover:text-brand"
+				>
 					Sub Board
 				</Link>
-				<nav className="flex items-center gap-5 text-sm text-text-secondary">
+				<nav className="flex items-center gap-6 text-sm text-text-secondary">
 					{NAV_ITEMS.map((item) => (
 						<Link
 							key={item.href}
 							href={item.href}
-							className="hover:text-text-primary"
+							className="group relative pb-1.5 transition hover:text-brand"
 						>
+							<span className="absolute inset-x-0 -bottom-2 h-[2px] origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100" />
 							{item.label}
 						</Link>
 					))}
 					{user ? (
 						<div className="flex items-center gap-3 text-text-primary">
-							<span className="hidden text-sm font-medium sm:inline">
+							<span className="hidden text-sm font-medium text-text-secondary sm:inline">
 								{user.nickname}님
 							</span>
 							<button
 								type="button"
 								onClick={() => logoutMutation.mutate()}
 								disabled={logoutMutation.isPending}
-								className="rounded-md border border-border-muted px-3 py-1 text-text-primary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+								className="btn-outline disabled:cursor-not-allowed disabled:opacity-60"
 							>
 								로그아웃
 							</button>
@@ -63,7 +67,7 @@ export function SiteHeader() {
 					) : (
 						<Link
 							href="/login"
-							className="rounded-md border border-border-muted px-3 py-1 text-text-primary transition hover:border-brand hover:text-brand"
+							className="btn-gradient"
 						>
 							로그인
 						</Link>

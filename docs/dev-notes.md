@@ -176,6 +176,12 @@ model Comment {
 
 (2025-10-18 기준 최신 프론트 코드를 반영한 흐름)
 
+## 프론트엔드 리퀴드 글래스 테마 (2025-10-19)
+- `globals.css`가 은은한 파스텔 그라디언트와 Apple Liquid Glass 느낌의 카드/버튼 유틸(`surface-card`, `surface-glass`, `btn-gradient`, `btn-outline`, `gradient-text`, `tag`)을 정의해 전체 화면이 밝고 투명한 질감으로 통일된다.
+- 레이아웃(`SiteHeader`, `SiteFooter`, `AppShell`)과 주요 화면(홈, 게시판, 검색, 새 글 작성, 상세/댓글, 인증)이 반투명 화이트와 부드러운 그림자를 사용하도록 재작업되어 가독성과 고급스러움을 동시에 확보했다.
+- 카드/리스트 뷰는 브랜드 블루 포커스 컬러만 강조하고 나머지는 중성 톤으로 정리, 호버 시 살짝 떠오르는 정도만 적용해 시각적 과도함을 줄였다.
+- 입력 폼/태그 칩도 투명 화이트 + 얇은 보더 조합으로 맞춰, 폼 경험이 전체 테마와 일관되게 느껴진다.
+
 ## 프론트엔드 API 클라이언트 개선
 - `apps/web/src/lib/api-client.ts`에서 `ApiError` 클래스를 도입해 HTTP 상태 코드와 응답 본문을 함께 전파한다.
 - 401 응답이 들어오면 `useAuthStore`의 `clearAuth`, `markHydrated`를 호출해 세션 상태를 즉시 초기화한다.

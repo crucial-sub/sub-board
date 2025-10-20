@@ -18,7 +18,7 @@ export default async function RootLayout({
 
 	return (
 		<html lang="ko">
-			<body className="bg-bg-app text-text-primary">
+			<body className="text-text-primary">
 				<UiProvider initialUser={currentUser}>
 					<ReactQueryProvider>{children}</ReactQueryProvider>
 				</UiProvider>

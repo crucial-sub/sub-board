@@ -6,7 +6,7 @@ import { useCreateComment } from "../hooks/usePostMutations";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 
 export function CommentForm({ postId }: { postId: string }) {
-	const [content, setContent] = useState(" ");
+	const [content, setContent] = useState("");
 	const mutation = useCreateComment(postId);
 	const user = useAuthStore((state) => state.user);
 	const hasHydrated = useAuthStore((state) => state.hasHydrated);
@@ -19,7 +19,7 @@ export function CommentForm({ postId }: { postId: string }) {
 
 	if (!user) {
 		return (
-			<p className="rounded-md border border-border-muted bg-white px-3 py-2 text-sm text-text-secondary">
+			<p className="rounded-2xl border border-border-muted bg-white/70 px-4 py-3 text-sm text-text-secondary">
 				로그인 후 댓글을 작성할 수 있습니다.
 			</p>
 		);
@@ -29,7 +29,7 @@ export function CommentForm({ postId }: { postId: string }) {
 		event.preventDefault();
 		if (!content.trim()) return;
 		await mutation.mutateAsync({ postId, content: content.trim() });
-		setContent(" ");
+		setContent("");
 	};
 
 	return (
@@ -38,13 +38,13 @@ export function CommentForm({ postId }: { postId: string }) {
 				value={content}
 				onChange={(event) => setContent(event.target.value)}
 				placeholder="댓글을 입력하세요"
-				className="w-full rounded-md border border-border-muted bg-white px-3 py-2 text-sm text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand"
+				className="w-full rounded-2xl border border-border-muted bg-white/80 px-4 py-3 text-sm text-text-primary shadow-card focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
 				rows={3}
 			/>
 			<button
 				type="submit"
 				disabled={mutation.isPending}
-				className="rounded-md bg-brand px-3 py-2 text-sm font-medium text-white shadow-card transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+				className="btn-gradient disabled:cursor-not-allowed disabled:opacity-60"
 			>
 				댓글 작성
 			</button>

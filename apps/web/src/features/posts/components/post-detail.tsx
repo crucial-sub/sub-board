@@ -20,39 +20,47 @@ export function PostDetail({ id }: { id: string }) {
 		: undefined;
 
 	if (isLoading) {
-		return <p className="text-text-secondary">게시글을 불러오는 중입니다...</p>;
+		return (
+			<div className="surface-glass p-6 text-sm text-text-secondary">
+				게시글을 불러오는 중입니다...
+			</div>
+		);
 	}
 
 	if (isError || !data) {
 		return (
-			<p className="text-sm text-red-500">게시글을 불러오는 데 실패했습니다.</p>
+			<p className="rounded-2xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-300">
+				게시글을 불러오는 데 실패했습니다.
+			</p>
 		);
 	}
 
 	return (
-		<article className="space-y-6">
-			<header className="space-y-3">
-				<div className="text-sm text-text-secondary">
+		<article className="space-y-8">
+			<header className="surface-card space-y-4 px-8 py-10">
+				<div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
 					작성자 {data.author.nickname} · 조회수{" "}
 					{data.viewCount.toLocaleString()}
 				</div>
-				<h1 className="text-3xl font-bold text-text-primary">{data.title}</h1>
+				<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
+					<span className="gradient-text">{data.title}</span>
+				</h1>
 				<time className="text-xs text-text-secondary" dateTime={data.createdAt}>
 					{new Date(data.createdAt).toLocaleString()}
 				</time>
 			</header>
 
-			<div className="whitespace-pre-wrap rounded-lg border border-border-muted bg-white p-6 shadow-card">
+			<div className="surface-card whitespace-pre-wrap px-8 py-10 text-sm leading-relaxed text-text-secondary">
 				{data.content}
 			</div>
 
 			{data.tags.length ? (
-				<div className="flex flex-wrap gap-2">
+				<div className="surface-glass flex flex-wrap gap-2 px-6 py-4">
 					{data.tags.map((tag) => (
 						<Link
 							key={tag.name}
 							href={`/posts?tag=${encodeURIComponent(tag.name)}`}
-							className="rounded-full border border-border-muted px-3 py-1 text-xs text-text-secondary transition hover:border-brand hover:text-brand"
+							className="tag transition hover:scale-105"
 						>
 							#{tag.name}
 						</Link>
@@ -60,35 +68,41 @@ export function PostDetail({ id }: { id: string }) {
 				</div>
 			) : null}
 
-			<section className="space-y-3">
+			<section className="space-y-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-lg font-semibold text-text-primary">댓글</h2>
 					<button
 						type="button"
 						onClick={() => setShowCommentForm((prev) => !prev)}
-						className="text-sm text-brand hover:text-brand-hover"
+						className="text-sm text-brand transition hover:text-brand-hover"
 					>
 						{showCommentForm ? "작성 취소" : "댓글 쓰기"}
 					</button>
 				</div>
-				{showCommentForm ? <CommentForm postId={id} /> : null}
+				{showCommentForm ? (
+					<div className="surface-glass p-5">
+						<CommentForm postId={id} />
+					</div>
+				) : null}
 				{deleteMutation.error ? (
-					<p className="text-sm text-red-500">
+					<p className="text-sm text-red-400">
 						{deleteMutation.error instanceof Error
 							? deleteMutation.error.message
 							: "댓글 삭제에 실패했습니다."}
 					</p>
 				) : null}
 				{data.comments.length === 0 ? (
-					<p className="text-sm text-text-secondary">첫 댓글을 남겨보세요.</p>
+					<p className="rounded-2xl border border-border-muted bg-white/70 px-4 py-5 text-sm text-text-secondary">
+						첫 댓글을 남겨보세요.
+					</p>
 				) : (
 					<ul className="space-y-4">
 						{data.comments.map((comment) => (
 							<li
 								key={comment.id}
-								className="rounded-md border border-border-muted bg-white p-4 text-sm shadow-sm"
+								className="surface-glass space-y-3 p-5 text-sm"
 							>
-								<div className="mb-1 flex items-center justify-between text-xs text-text-secondary">
+								<div className="flex items-center justify-between text-xs text-text-secondary">
 									<span>{comment.author.nickname}</span>
 									<div className="flex items-center gap-2">
 										<time dateTime={comment.createdAt}>
@@ -99,7 +113,7 @@ export function PostDetail({ id }: { id: string }) {
 												type="button"
 												onClick={() => deleteMutation.mutateAsync(comment.id)}
 												disabled={pendingCommentId === comment.id}
-												className="rounded border border-border-muted px-2 py-1 text-xs text-text-secondary transition hover:border-red-500 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+												className="rounded-full border border-border-muted px-2 py-1 text-xs text-text-secondary transition hover:border-red-300 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-60"
 											>
 												{pendingCommentId === comment.id
 													? "삭제 중..."
@@ -108,7 +122,7 @@ export function PostDetail({ id }: { id: string }) {
 										) : null}
 									</div>
 								</div>
-								<p className="text-text-primary">{comment.content}</p>
+								<p className="text-text-secondary">{comment.content}</p>
 							</li>
 						))}
 					</ul>

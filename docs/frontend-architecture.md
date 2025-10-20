@@ -86,7 +86,7 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="ko">
-      <body className="bg-bg-app text-text-primary">
+      <body className="text-text-primary">
         <UiProvider initialUser={currentUser}>
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </UiProvider>
@@ -97,7 +97,7 @@ export default async function RootLayout({ children }) {
 ```
 - **UiProvider** (`providers/ui-provider.tsx`): 서버에서 전달한 `currentUser`를 `AuthStoreProvider` 초기 상태로 주입해 첫 렌더부터 로그인 상태가 유지된다.
 - **ReactQueryProvider** (`providers/react-query-provider.tsx`): React Query 클라이언트를 생성하고 `QueryClientProvider`로 감싼다.  
-- Tailwind 기본 배경/텍스트 색상을 `<body>`에 적용.
+- 글로벌 `globals.css`에서 파스텔 톤 그라디언트와 리퀴드 글래스 질감을 정의하므로 `<body>`에는 텍스트 컬러만 지정하면 된다.
 
 ---
 
@@ -107,11 +107,11 @@ export default async function RootLayout({ children }) {
 - `"use client"` 선언 → 클라이언트에서만 렌더.  
 - `useAuthStore`로 로그인 상태와 hydration 여부를 읽고, 로그인 여부에 따라 버튼을 분기한다.  
 - `logout` 버튼 클릭 시 `useLogoutMutation` → `/auth/logout` 호출 후 Zustand 스토어 초기화.
-- 기본적으로 서버에서 전달된 세션으로 즉시 실제 UI를 렌더하며, 예외적으로 `hasHydrated`가 `false`인 경우에만 스켈레톤(`animate-pulse`)을 노출한다.
+- 상단바는 반투명 화이트와 얇은 브랜드 언더라인으로 구성돼 Apple식 리퀴드 글래스 톤을 연출하며, `btn-gradient` / `btn-outline` 유틸 클래스로 CTA를 통일했다.
 
 ### Tailwind 사용 패턴
-- `className="border-b border-border-muted bg-white/70 backdrop-blur"`처럼 여러 유틸 클래스를 조합.  
-- `text-text-primary`, `text-text-secondary` 등은 Tailwind 설정에서 정의한 커스텀 컬러.  
+- 파스텔 그라디언트와 글라스 효과가 반복되므로 `globals.css`에 `surface-card`, `surface-glass`, `btn-gradient`, `btn-outline`, `gradient-text`, `tag` 등을 컴포넌트 레이어로 선언해 재사용한다.  
+- `text-text-primary`, `text-text-secondary`, `border-border-muted` 등은 Tailwind 설정에서 정의한 커스텀 컬러.  
 - 반응형은 `md:flex-row`, `sm:hidden` 같은 breakpoint 변형을 사용.
 
 ---
