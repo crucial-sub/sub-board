@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AuthForm } from "@/features/auth/components/auth-form";
+import Link from "next/link";
 
 type SearchParams = { error?: string };
 
@@ -36,10 +36,7 @@ export default async function LoginPage({ searchParams }: Props) {
 
 				<footer className="text-center text-sm text-text-secondary">
 					계정이 없나요?{" "}
-					<Link
-						className="text-brand hover:text-brand-hover"
-						href="/register"
-					>
+					<Link className="text-brand hover:text-brand-hover" href="/register">
 						회원가입
 					</Link>
 				</footer>

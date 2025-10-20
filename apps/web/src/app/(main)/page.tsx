@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/state/auth-store";
+import { fetchUserStats } from "@/features/users/api";
 
 export default function HomePage() {
 	const user = useAuthStore((state) => state.user);
 	const hasHydrated = useAuthStore((state) => state.hasHydrated);
+	const { data: userStats, isLoading: isStatsLoading } = useQuery({
+		queryKey: ["user-stats", user?.id],
+		queryFn: fetchUserStats,
+		enabled: Boolean(hasHydrated && user?.id),
+		staleTime: 60_000,
+	});
 
 	if (hasHydrated && user) {
 		return (
@@ -39,33 +47,70 @@ export default function HomePage() {
 								내 활동
 							</p>
 							<p className="mt-2 text-2xl font-semibold text-text-primary">
-								진행 중인 토론 3건
+								{isStatsLoading ? (
+									<span className="inline-block h-6 w-16 animate-pulse rounded bg-border-muted" />
+								) : (
+									`${userStats?.postCount ?? 0}건 작성`
+								)}
 							</p>
 							<p className="text-xs text-text-secondary">
-								관심 있는 글에서 논의를 이어가 보세요.
+								{isStatsLoading ? (
+									<span className="inline-block h-4 w-40 animate-pulse rounded bg-border-muted" />
+								) : userStats?.lastPost ? (
+									<>
+										{new Date(
+											userStats.lastPost.createdAt,
+										).toLocaleDateString()}{" "}
+										· {userStats.lastPost.title}
+									</>
+								) : (
+									"아직 작성한 글이 없어요."
+								)}
 							</p>
 						</div>
 						<div className="surface-glass p-5">
 							<p className="text-xs uppercase tracking-wide text-text-subtle">
-								즐겨찾는 태그
+								남긴 댓글
 							</p>
 							<p className="mt-2 text-2xl font-semibold text-text-primary">
-								#스터디 #기술트렌드
+								{isStatsLoading ? (
+									<span className="inline-block h-6 w-16 animate-pulse rounded bg-border-muted" />
+								) : (
+									`${userStats?.commentCount ?? 0}건 참여`
+								)}
 							</p>
 							<p className="text-xs text-text-secondary">
-								맞춤 태그를 기반으로 추천을 강화했어요.
+								{isStatsLoading ? (
+									<span className="inline-block h-4 w-32 animate-pulse rounded bg-border-muted" />
+								) : (
+									"토론에 남긴 발자취를 확인해 보세요."
+								)}
 							</p>
 						</div>
 						<div className="surface-glass p-5">
 							<p className="text-xs uppercase tracking-wide text-text-subtle">
-								오늘의 제안
+								자주 사용하는 태그
 							</p>
-							<p className="mt-2 text-2xl font-semibold text-text-primary">
-								커뮤니티 뉴스레터 구독
-							</p>
-							<p className="text-xs text-text-secondary">
-								한 주의 인기 글과 인사이트를 모아 드립니다.
-							</p>
+							<div className="mt-2 min-h-[48px]">
+								{isStatsLoading ? (
+									<div className="flex gap-2">
+										<span className="h-6 w-16 animate-pulse rounded-full bg-border-muted" />
+										<span className="h-6 w-16 animate-pulse rounded-full bg-border-muted" />
+									</div>
+								) : userStats?.topTags?.length ? (
+									<div className="flex flex-wrap gap-2">
+										{userStats.topTags.map((tag) => (
+											<span key={tag.name} className="tag">
+												#{tag.name} · {tag.count}
+											</span>
+										))}
+									</div>
+								) : (
+									<p className="text-xs text-text-secondary">
+										자주 사용하는 태그가 아직 없어요.
+									</p>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -100,7 +145,14 @@ export default function HomePage() {
 							<Link href="/login" className="btn-outline">
 								탐험을 시작할게요
 							</Link>
-						) : null}
+						) : (
+							<span
+								className="btn-outline invisible pointer-events-none select-none"
+								aria-hidden="true"
+							>
+								탐험을 시작할게요
+							</span>
+						)}
 					</div>
 				</div>
 			</div>

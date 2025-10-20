@@ -23,8 +23,14 @@ export function SiteHeader() {
 		return (
 			<header className="border-b border-white/60 bg-white/70 backdrop-blur-2xl">
 				<div className="container flex items-center justify-between py-4">
-					<span className="h-5 w-24 animate-pulse rounded bg-white/60" />
-					<span className="h-5 w-32 animate-pulse rounded bg-white/60" />
+					<div className="flex items-center gap-6">
+						{/* Nav items skeleton */}
+						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
+						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
+						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
+						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
+					</div>
+					<span className="h-9 w-20 animate-pulse rounded bg-white/60" />
 				</div>
 			</header>
 		);
@@ -65,10 +71,7 @@ export function SiteHeader() {
 							</button>
 						</div>
 					) : (
-						<Link
-							href="/login"
-							className="btn-gradient"
-						>
+						<Link href="/login" className="btn-gradient">
 							로그인
 						</Link>
 					)}

@@ -69,4 +69,49 @@ export class UsersService {
 		const { id, loginId, nickname, createdAt, updatedAt } = user;
 		return { id, loginId, nickname, createdAt, updatedAt };
 	}
+
+	async getUserStats(userId: string) {
+		const [postCount, commentCount, recentPost, tagUsage] =
+			await Promise.all([
+				this.prisma.post.count({ where: { authorId: userId } }),
+				this.prisma.comment.count({ where: { authorId: userId } }),
+				this.prisma.post.findFirst({
+					where: { authorId: userId },
+					select: { id: true, title: true, createdAt: true },
+					orderBy: { createdAt: "desc" },
+				}),
+				this.prisma.tag.findMany({
+					where: { posts: { some: { authorId: userId } } },
+					select: {
+						name: true,
+						posts: {
+							where: { authorId: userId },
+							select: { id: true },
+						},
+					},
+				}),
+			]);
+
+		const topTags = tagUsage
+			.map((tag) => ({
+				name: tag.name,
+				count: tag.posts.length,
+			}))
+			.filter((tag) => tag.count > 0)
+			.sort((a, b) => b.count - a.count)
+			.slice(0, 3);
+
+		return {
+			postCount,
+			commentCount,
+			topTags,
+			lastPost: recentPost
+				? {
+						id: recentPost.id,
+						title: recentPost.title,
+						createdAt: recentPost.createdAt,
+				  }
+				: null,
+		};
+	}
 }

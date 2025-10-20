@@ -263,6 +263,7 @@ useMutation({
 | `/posts/:id` | PATCH/DELETE | 작성자 한정 수정/삭제 |
 | `/posts/tags` | GET | 태그 리스트 + 게시글 카운트 |
 | `/comments` | POST | 댓글 작성 |
+| `/users/me/stats` | GET | 로그인 사용자의 게시글/댓글/태그 통계 조회 |
 | `/comments/:id` | DELETE | 댓글 삭제 |
 
 React Query가 `apiClient`를 통해 이 엔드포인트들을 호출한다.
