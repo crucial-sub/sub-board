@@ -23,14 +23,16 @@ export function SiteHeader() {
 		return (
 			<header className="border-b border-white/60 bg-white/70 backdrop-blur-2xl">
 				<div className="container flex items-center justify-between py-4">
+					{/* Logo skeleton */}
+					<span className="h-5 w-24 animate-pulse rounded bg-white/60" />
+					{/* Nav + auth skeleton */}
 					<div className="flex items-center gap-6">
-						{/* Nav items skeleton */}
 						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
 						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
 						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
 						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
+						<span className="h-9 w-20 animate-pulse rounded bg-white/60" />
 					</div>
-					<span className="h-9 w-20 animate-pulse rounded bg-white/60" />
 				</div>
 			</header>
 		);
@@ -41,23 +43,23 @@ export function SiteHeader() {
 			<div className="container flex items-center justify-between py-4">
 				<Link
 					href="/"
-					className="text-base font-semibold tracking-tight text-text-primary transition hover:text-brand"
+					className="flex h-10 items-center text-base font-semibold tracking-tight text-text-primary transition hover:text-brand"
 				>
 					Sub Board
 				</Link>
-				<nav className="flex items-center gap-6 text-sm text-text-secondary">
+				<nav className="flex h-10 items-center gap-6 text-sm text-text-secondary leading-none">
 					{NAV_ITEMS.map((item) => (
 						<Link
 							key={item.href}
 							href={item.href}
-							className="group relative pb-1.5 transition hover:text-brand"
+							className="group relative inline-flex h-full items-center transition hover:text-brand"
 						>
-							<span className="absolute inset-x-0 -bottom-2 h-[2px] origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100" />
+							<span className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover:scale-x-100" />
 							{item.label}
 						</Link>
 					))}
 					{user ? (
-						<div className="flex items-center gap-3 text-text-primary">
+						<div className="flex h-10 items-center gap-3 text-text-primary">
 							<span className="hidden text-sm font-medium text-text-secondary sm:inline">
 								{user.nickname}님
 							</span>
