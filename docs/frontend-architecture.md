@@ -114,6 +114,9 @@ export default async function RootLayout({ children }) {
 - `text-text-primary`, `text-text-secondary`, `border-border-muted` 등은 Tailwind 설정에서 정의한 커스텀 컬러.  
 - 반응형은 `md:flex-row`, `sm:hidden` 같은 breakpoint 변형을 사용.
 
+### 실시간 위젯 영역
+- 홈 화면 하단의 `CalloutPanels` 영역은 현재 비워 둔 상태이며, 향후 도입할 실시간/외부 데이터 위젯을 배치하기 위한 자리다.
+
 ---
 
 ## 5. 인증 도메인 (`features/auth`)

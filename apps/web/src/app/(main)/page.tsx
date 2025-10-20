@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { fetchUserStats } from "@/features/users/api";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 export default function HomePage() {
 	const user = useAuthStore((state) => state.user);
@@ -26,7 +26,9 @@ export default function HomePage() {
 							Welcome Back
 						</p>
 						<h1 className="text-4xl font-semibold text-text-primary sm:text-5xl">
-							<span className="gradient-text block">{user.nickname}님과 함께하는 오늘의 Sub Board</span>
+							<span className="gradient-text block">
+								{user.nickname}님과 함께하는 오늘의 Sub Board
+							</span>
 						</h1>
 						<p className="max-w-2xl text-lg text-text-secondary">
 							맞춤 태그로 큐레이션된 최신 게시글을 살펴보고, 영감이 떠오를 때
@@ -114,7 +116,6 @@ export default function HomePage() {
 						</div>
 					</div>
 				</div>
-				<CalloutPanels />
 			</section>
 		);
 	}
@@ -134,8 +135,7 @@ export default function HomePage() {
 					</h1>
 					<p className="mx-auto max-w-2xl text-lg text-text-secondary sm:ml-0">
 						Next.js, React Query, Tailwind CSS로 완성한 커뮤니티 공간입니다.
-						아이디어를 자유롭게 나누고, 관심 있는 주제를 직접 큐레이션해
-						보세요.
+						아이디어를 자유롭게 나누고, 관심 있는 주제를 직접 큐레이션해 보세요.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3 sm:justify-start">
 						<Link href="/posts" className="btn-gradient">
@@ -154,56 +154,6 @@ export default function HomePage() {
 							</span>
 						)}
 					</div>
-				</div>
-			</div>
-			<CalloutPanels />
-		</section>
-	);
-}
-
-function CalloutPanels() {
-	return (
-		<section className="grid gap-6 lg:grid-cols-3">
-			<div className="surface-glass p-6">
-				<p className="text-sm font-semibold text-text-primary">
-					실시간 태그 피드
-				</p>
-				<p className="mt-2 text-sm text-text-secondary">
-					인기 태그를 구독하고 원하는 주제만 빠르게 확인하세요.
-				</p>
-				<div className="mt-6 flex flex-wrap gap-2 text-xs text-text-secondary">
-					<span className="tag">#라이브코딩</span>
-					<span className="tag">#스터디모집</span>
-					<span className="tag">#주간회고</span>
-				</div>
-			</div>
-			<div className="surface-glass p-6">
-				<p className="text-sm font-semibold text-text-primary">
-					스토리 하이라이트
-				</p>
-				<p className="mt-2 text-sm text-text-secondary">
-					커뮤니티에서 가장 사랑받은 게시글과 아카이브를 모아 드립니다.
-				</p>
-				<ul className="mt-5 space-y-3 text-xs text-text-secondary">
-					<li>・ 2025년 프론트엔드 로드맵 아카이브</li>
-					<li>・ 리모트 스터디를 운영하는 법</li>
-					<li>・ 개발자 감성의 뉴스레터 템플릿</li>
-				</ul>
-			</div>
-			<div className="surface-glass p-6">
-				<p className="text-sm font-semibold text-text-primary">
-					참여형 챌린지
-				</p>
-				<p className="mt-2 text-sm text-text-secondary">
-					매주 열리는 커뮤니티 챌린지에 참여하고 배지를 모아 보세요.
-				</p>
-				<div className="mt-6 flex items-center gap-3 text-sm text-text-secondary">
-					<span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand/20 text-lg font-bold text-brand">
-						07
-					</span>
-					<p className="text-xs text-text-secondary">
-						이번 주 미션: 당신이 사랑한 레거시 코드를 소개하기
-					</p>
 				</div>
 			</div>
 		</section>
