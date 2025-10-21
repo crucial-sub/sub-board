@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { useNotificationStore } from "@/features/notifications/state/notification-store";
+import { useEffect, useRef } from "react";
 
 const API_BASE_URL =
 	process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
@@ -26,10 +26,13 @@ export function useNotificationStream() {
 		(state) => state.removeNotification,
 	);
 	const retryTimer = useRef<NodeJS.Timeout | null>(null);
+	const dismissTimers = useRef<Set<NodeJS.Timeout>>(new Set());
 
 	useEffect(() => {
 		if (!user) {
 			clearNotifications();
+			dismissTimers.current.forEach(clearTimeout);
+			dismissTimers.current.clear();
 			return undefined;
 		}
 
@@ -44,6 +47,11 @@ export function useNotificationStream() {
 			nextSource.onmessage = (event) => {
 				try {
 					const payload = JSON.parse(event.data) as NotificationEvent;
+					
+					if (!payload.type || !payload.title || !payload.message) {
+						return;
+					}
+					
 					const id = payload.id ?? crypto.randomUUID();
 					const href = payload.href ?? "/";
 					const createdAt = payload.createdAt ?? new Date().toISOString();
@@ -57,7 +65,12 @@ export function useNotificationStream() {
 						createdAt,
 					});
 
-					setTimeout(() => removeNotification(id), AUTO_DISMISS_MS);
+					// Track auto-dismiss timers so we can cancel them during cleanup.
+					const timerId = setTimeout(() => {
+						removeNotification(id);
+						dismissTimers.current.delete(timerId);
+					}, AUTO_DISMISS_MS);
+					dismissTimers.current.add(timerId);
 				} catch (_error) {
 					// 무시: 잘못된 이벤트 포맷
 				}
@@ -86,6 +99,8 @@ export function useNotificationStream() {
 				clearTimeout(retryTimer.current);
 				retryTimer.current = null;
 			}
+			dismissTimers.current.forEach(clearTimeout);
+			dismissTimers.current.clear();
 			if (eventSource) {
 				eventSource.close();
 			}

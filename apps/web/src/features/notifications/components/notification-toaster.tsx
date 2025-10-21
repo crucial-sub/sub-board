@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect } from "react";
 import { useNotificationStream } from "@/features/notifications/hooks/useNotificationStream";
 import { useNotificationStore } from "@/features/notifications/state/notification-store";
+import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 export function NotificationToaster() {
 	useNotificationStream();
@@ -11,17 +11,45 @@ export function NotificationToaster() {
 	const removeNotification = useNotificationStore(
 		(state) => state.removeNotification,
 	);
+	const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+	// Maintain per-notification timers so existing toasts keep their original dismissal time.
+	useEffect(() => {
+		const timers = timersRef.current;
+
+		for (const [id, timer] of timers) {
+			const stillVisible = notifications.some(
+				(notification) => notification.id === id,
+			);
+			if (!stillVisible) {
+				clearTimeout(timer);
+				timers.delete(id);
+			}
+		}
+
+		for (const notification of notifications) {
+			if (timers.has(notification.id)) {
+				continue;
+			}
+
+			const timerId = setTimeout(() => {
+				removeNotification(notification.id);
+				timers.delete(notification.id);
+			}, 8000);
+
+			timers.set(notification.id, timerId);
+		}
+	}, [notifications, removeNotification]);
 
 	useEffect(() => {
-		const timers = notifications.map((notification) =>
-			setTimeout(() => removeNotification(notification.id), 8000),
-		);
 		return () => {
-			for (const timer of timers) {
+			const timers = timersRef.current;
+			for (const timer of timers.values()) {
 				clearTimeout(timer);
 			}
+			timers.clear();
 		};
-	}, [notifications, removeNotification]);
+	}, []);
 
 	if (notifications.length === 0) {
 		return null;
@@ -52,12 +80,14 @@ export function NotificationToaster() {
 							✕
 						</button>
 					</div>
-					<Link
-						href={notification.href}
-						className="mt-3 inline-flex text-xs font-semibold text-brand hover:text-brand-hover"
-					>
-						바로가기
-					</Link>
+					{notification.href && (
+						<Link
+							href={notification.href}
+							className="mt-3 inline-flex text-xs font-semibold text-brand hover:text-brand-hover"
+						>
+							바로가기
+						</Link>
+					)}
 				</div>
 			))}
 		</div>

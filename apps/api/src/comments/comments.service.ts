@@ -4,9 +4,9 @@ import {
 	Injectable,
 	NotFoundException,
 } from "@nestjs/common";
+import { NotificationsService } from "../notifications/notifications.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
-import { NotificationsService } from "../notifications/notifications.service";
 import type { CreateCommentDto } from "./dto/create-comment.dto";
 
 @Injectable()

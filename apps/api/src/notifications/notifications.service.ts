@@ -32,7 +32,12 @@ export class NotificationsService {
 	broadcast(event: NotificationEvent) {
 		for (const subjects of this.streams.values()) {
 			for (const subject of subjects) {
-				subject.next(event);
+				try {
+					subject.next(event);
+				} catch (error) {
+					// Log error but continue notifying other subjects
+					console.error('Failed to send notification:', error);
+				}
 			}
 		}
 	}
@@ -43,7 +48,11 @@ export class NotificationsService {
 			return;
 		}
 		for (const subject of subjects) {
-			subject.next(event);
+			try {
+				subject.next(event);
+			} catch (error) {
+				console.error(`Failed to send notification to user ${userId}:`, error);
+			}
 		}
 	}
 
