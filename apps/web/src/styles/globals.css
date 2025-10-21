@@ -271,9 +271,14 @@
 		animation-delay: 0.8s;
 	}
 
-	/* Feature Card with Hover Effect */
+	/* Feature Card with Smooth Hover Effect */
 	.feature-card {
-		@apply surface-glass p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
+		@apply surface-glass p-8 transition-all duration-500 ease-out;
+	}
+
+	.feature-card:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.35);
 	}
 
 	/* Stats Number Animation */
@@ -282,8 +287,56 @@
 		background-image: linear-gradient(120deg, var(--brand), var(--accent-cyan));
 	}
 
-	/* Testimonial Card */
+	/* Testimonial Card with Smooth Hover */
 	.testimonial-card {
-		@apply surface-card p-6 transition-transform duration-300 hover:-translate-y-1;
+		@apply surface-card p-6 transition-all duration-500 ease-out;
+	}
+
+	.testimonial-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 35px 65px -25px rgba(15, 23, 42, 0.4);
+	}
+
+	/* Floating Animation for Decorative Elements */
+	@keyframes float-slow {
+		0%,
+		100% {
+			transform: translateY(0) rotate(0deg);
+		}
+		50% {
+			transform: translateY(-20px) rotate(5deg);
+		}
+	}
+
+	@keyframes float-diagonal {
+		0%,
+		100% {
+			transform: translate(0, 0) rotate(0deg);
+		}
+		50% {
+			transform: translate(-15px, 30px) rotate(-10deg);
+		}
+	}
+
+	@keyframes float-gentle {
+		0%,
+		100% {
+			transform: translateY(0) rotate(0deg);
+		}
+		50% {
+			transform: translateY(15px) rotate(-8deg);
+		}
+	}
+
+	.float-slow {
+		animation: float-slow 8s ease-in-out infinite;
+	}
+
+	.float-diagonal {
+		animation: float-diagonal 10s ease-in-out infinite;
+	}
+
+	.float-gentle {
+		animation: float-gentle 7s ease-in-out infinite;
 	}
 }

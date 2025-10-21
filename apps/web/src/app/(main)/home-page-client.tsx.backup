@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, forwardRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -42,21 +42,16 @@ const staggerContainer = {
 	},
 };
 
-// Reusable animated section component - forwardRef로 변경
-const AnimatedSection = forwardRef<
-	HTMLElement,
-	{
-		children: React.ReactNode;
-		className?: string;
-	}
->(({ children, className = "" }, ref) => {
-	return (
-		<section ref={ref} className={className}>
-			{children}
-		</section>
-	);
-});
-AnimatedSection.displayName = "AnimatedSection";
+// Reusable animated section component - 단순 래퍼로 변경
+function AnimatedSection({
+	children,
+	className = "",
+}: {
+	children: React.ReactNode;
+	className?: string;
+}) {
+	return <section className={className}>{children}</section>;
+}
 
 export function HomePageClient({ initialUser, initialStats }: Props) {
 	const user = useAuthStore((state) => state.user);
@@ -81,16 +76,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 
 	const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 	const heroOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
-
-	// Features 섹션용 스크롤 진행도
-	const featuresRef = useRef(null);
-	const { scrollYProgress: featuresProgress } = useScroll({
-		target: featuresRef,
-		offset: ["start end", "end start"],
-	});
-
-	const featuresY = useTransform(featuresProgress, [0, 0.5, 1], [50, 0, -50]);
-	const featuresOpacity = useTransform(featuresProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
 	if (hasHydrated && user) {
 		return (
@@ -173,8 +158,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						>
 							<motion.div
 								variants={scaleIn}
-								
-								
+								whileHover={{ scale: 1.01, y: -2 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
 								className="feature-card"
 							>
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
@@ -203,8 +188,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 
 							<motion.div
 								variants={scaleIn}
-								
-								
+								whileHover={{ scale: 1.01, y: -2 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
 								className="feature-card"
 							>
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
@@ -224,8 +209,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 
 							<motion.div
 								variants={scaleIn}
-								
-								
+								whileHover={{ scale: 1.01, y: -2 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
 								className="feature-card"
 							>
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
@@ -292,7 +277,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: 5 }}
-										
+										transition={{ duration: 0.3, ease: "easeOut" }}
 									>
 										✍️
 									</motion.div>
@@ -309,7 +294,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: -5 }}
-										
+										transition={{ duration: 0.3, ease: "easeOut" }}
 									>
 										📚
 									</motion.div>
@@ -326,7 +311,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: 5 }}
-										
+										transition={{ duration: 0.3, ease: "easeOut" }}
 									>
 										🔎
 									</motion.div>
@@ -343,7 +328,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: -5 }}
-										
+										transition={{ duration: 0.3, ease: "easeOut" }}
 									>
 										👤
 									</motion.div>
@@ -374,15 +359,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 					style={{ y: heroY, opacity: heroOpacity }}
 					className="pointer-events-none absolute right-1/4 bottom-0 h-96 w-96 bg-[var(--accent-pink)]/25 blur-[150px]"
 				/>
-
-				{/* 날아다니는 장식 요소들 - KOTA 스타일 */}
-				<div className="pointer-events-none absolute inset-0 z-0">
-					<div className="float-slow absolute left-[10%] top-[20%] h-20 w-20 rounded-2xl bg-gradient-to-br from-brand/20 to-accent-cyan/20 backdrop-blur-sm" />
-					<div className="float-diagonal absolute right-[15%] top-[35%] h-24 w-24 rounded-full bg-gradient-to-br from-accent-pink/20 to-brand/20 backdrop-blur-sm" />
-					<div className="float-gentle absolute left-[70%] top-[15%] h-16 w-16 rounded-xl bg-gradient-to-br from-accent-cyan/20 to-accent-pink/20 backdrop-blur-sm" />
-					<div className="float-slow absolute right-[25%] bottom-[25%] h-14 w-14 rounded-full bg-gradient-to-br from-brand/15 to-accent-pink/15 backdrop-blur-sm" style={{animationDelay: '1s'}} />
-					<div className="float-diagonal absolute left-[20%] bottom-[30%] h-18 w-18 rounded-2xl bg-gradient-to-br from-accent-cyan/15 to-brand/15 backdrop-blur-sm" style={{animationDelay: '2s'}} />
-				</div>
 
 				<div className="container relative z-10 mx-auto max-w-6xl px-6 py-20 text-center">
 					<motion.div
@@ -417,14 +393,14 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							variants={fadeInUp}
 							className="mt-10 flex flex-wrap justify-center gap-4"
 						>
-							<motion.div  whileTap={{ scale: 0.95 }}>
+							<motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.95 }}>
 								<Link href="/posts" className="btn-gradient text-base px-8 py-3">
 									게시글 둘러보기
 								</Link>
 							</motion.div>
 							{hasHydrated ? (
 								<motion.div
-									
+									whileHover={{ scale: 1.01 }}
 									whileTap={{ scale: 0.95 }}
 								>
 									<Link
@@ -457,8 +433,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								<motion.div
 									key={stat.id}
 									variants={scaleIn}
-									
-									
+									whileHover={{ scale: 1.01, y: -2 }}
+									transition={{ duration: 0.3, ease: "easeOut" }}
 									className="surface-glass p-6 cursor-default"
 								>
 									<div className="stats-number">{stat.number}</div>
@@ -473,16 +449,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 			</section>
 
 			{/* Features Section */}
-			<AnimatedSection ref={featuresRef} className="section-lime py-24 relative overflow-hidden">
-				{/* 스크롤에 따라 움직이는 배경 장식 */}
-				<motion.div
-					style={{ y: featuresY, opacity: featuresOpacity }}
-					className="pointer-events-none absolute right-[10%] top-[10%] h-32 w-32 rounded-full bg-gradient-to-br from-accent-cyan/20 to-brand/15 blur-[60px]"
-				/>
-				<motion.div
-					style={{ y: featuresY, opacity: featuresOpacity }}
-					className="pointer-events-none absolute left-[5%] bottom-[15%] h-40 w-40 rounded-full bg-gradient-to-br from-brand/15 to-accent-pink/20 blur-[70px]"
-				/>
+			<AnimatedSection className="section-lime py-24">
 				<div className="container mx-auto max-w-6xl px-6">
 					<motion.div
 						initial="hidden"
@@ -547,14 +514,14 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							<motion.div
 								key={feature.id}
 								variants={scaleIn}
-								
-								
+								whileHover={{ scale: 1.01, y: -3 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
 								className="feature-card cursor-default"
 							>
 								<motion.div
 									className="text-4xl mb-4"
 									whileHover={{ scale: 1.1, rotate: 8 }}
-									
+									transition={{ duration: 0.3, ease: "easeOut" }}
 								>
 									{feature.emoji}
 								</motion.div>
@@ -650,8 +617,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								<motion.div
 									key={value.id}
 									variants={scaleIn}
-									
-									
+									whileHover={{ scale: 1.02, x: 8 }}
+									transition={{ duration: 0.3, ease: "easeOut" }}
 									className="surface-card p-6 cursor-default"
 								>
 									<div className="text-2xl mb-2">{value.emoji}</div>
@@ -718,8 +685,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							<motion.div
 								key={testimonial.id}
 								variants={scaleIn}
-								
-								
+								whileHover={{ y: -6, scale: 1.02 }}
+								transition={{ duration: 0.3, ease: "easeOut" }}
 								className="testimonial-card cursor-default"
 							>
 								<p className="text-text-secondary italic">
@@ -777,7 +744,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						>
 							{hasHydrated ? (
 								<motion.div
-									
+									whileHover={{ scale: 1.01 }}
 									whileTap={{ scale: 0.95 }}
 								>
 									<Link
@@ -795,7 +762,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									회원가입하고 시작하기
 								</span>
 							)}
-							<motion.div  whileTap={{ scale: 0.95 }}>
+							<motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.95 }}>
 								<Link
 									href="/posts"
 									className="btn-outline text-base px-8 py-3"
@@ -810,8 +777,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						whileInView="visible"
 						viewport={{ once: true, amount: 0.3 }}
 						variants={scaleIn}
-						
-						
+						whileHover={{ scale: 1.01 }}
+						transition={{ duration: 0.3, ease: "easeOut" }}
 						className="mt-16 surface-card p-8 cursor-default"
 					>
 						<div className="grid gap-8 sm:grid-cols-3">
@@ -830,8 +797,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							].map((item) => (
 								<motion.div
 									key={item.id}
-									
-									
+									whileHover={{ y: -4 }}
+									transition={{ duration: 0.3, ease: "easeOut" }}
 								>
 									<div className="text-3xl font-bold text-brand">
 										{item.label}
