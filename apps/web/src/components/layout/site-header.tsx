@@ -37,6 +37,12 @@ export async function SiteHeader() {
 							<span className="hidden text-sm font-medium text-text-secondary sm:inline">
 								{user.nickname}님
 							</span>
+							<Link
+								href="/profile"
+								className="rounded-full border border-border-muted px-3 py-1 text-xs text-text-secondary transition hover:border-brand hover:text-brand"
+							>
+								프로필
+							</Link>
 							<LogoutButton />
 						</div>
 					) : (

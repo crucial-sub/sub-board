@@ -41,6 +41,25 @@ export class ApiClient {
 		});
 	}
 
+	async patch<T>({
+		path,
+		body,
+		init,
+	}: {
+		path: string;
+		body: unknown;
+		init?: RequestInit;
+	}) {
+		return this.request<T>(path, {
+			method: "PATCH",
+			body: JSON.stringify(body),
+			headers: {
+				"Content-Type": "application/json",
+			},
+			...init,
+		});
+	}
+
 	// DELETE 요청도 공통 request 로직을 그대로 활용할 수 있도록 래핑한다
 	async delete<T>(path: string, init?: RequestInit): Promise<T> {
 		return this.request<T>(path, { method: "DELETE", ...init });

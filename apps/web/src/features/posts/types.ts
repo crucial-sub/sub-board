@@ -21,6 +21,17 @@ export type PostListItem = {
 	}>;
 };
 
+export type PostComment = {
+	id: string;
+	content: string;
+	createdAt: string;
+	updatedAt: string;
+	author: {
+		id: string;
+		nickname: string;
+	};
+};
+
 export type PostListResponse = {
 	items: PostListItem[];
 	total: number;
@@ -29,13 +40,9 @@ export type PostListResponse = {
 };
 
 export type PostDetailResponse = PostListItem & {
-	comments: Array<{
-		id: string;
-		content: string;
-		createdAt: string;
-		author: {
-			id: string;
-			nickname: string;
-		};
-	}>;
+	comments: PostComment[];
 };
+
+export type PostUpdateResponse = Omit<PostListItem, "author">;
+
+export type CommentMutationResponse = PostComment;

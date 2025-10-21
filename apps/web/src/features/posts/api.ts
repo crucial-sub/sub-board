@@ -1,5 +1,9 @@
 // 게시글 및 댓글 작성을 위한 API 래퍼 함수 모음
 import { apiClient } from "@/lib/api-client";
+import type {
+	CommentMutationResponse,
+	PostUpdateResponse,
+} from "@/features/posts/types";
 
 export type CreatePostPayload = {
 	title: string;
@@ -9,6 +13,16 @@ export type CreatePostPayload = {
 
 export type CreateCommentPayload = {
 	postId: string;
+	content: string;
+};
+
+export type UpdatePostPayload = {
+	title?: string;
+	content?: string;
+	tags?: string[];
+};
+
+export type UpdateCommentPayload = {
 	content: string;
 };
 
@@ -22,4 +36,21 @@ export function createComment(payload: CreateCommentPayload) {
 
 export function deleteComment(commentId: string) {
 	return apiClient.delete<{ id: string }>(`/comments/${commentId}`);
+}
+
+export function updatePost(postId: string, payload: UpdatePostPayload) {
+	return apiClient.patch<PostUpdateResponse>({
+		path: `/posts/${postId}`,
+		body: payload,
+	});
+}
+
+export function updateComment(
+	commentId: string,
+	payload: UpdateCommentPayload,
+) {
+	return apiClient.patch<CommentMutationResponse>({
+		path: `/comments/${commentId}`,
+		body: payload,
+	});
 }

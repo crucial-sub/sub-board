@@ -1,6 +1,14 @@
-// 게시글과 댓글 작성 뮤테이션을 제공하는 훅
+// 게시글과 댓글 작성/수정 뮤테이션을 제공하는 훅
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createComment, createPost, deleteComment } from "../api";
+import {
+	createComment,
+	createPost,
+	deleteComment,
+	updateComment,
+	updatePost,
+	type UpdateCommentPayload,
+	type UpdatePostPayload,
+} from "../api";
 
 export function useCreatePost() {
 	const queryClient = useQueryClient();
@@ -28,6 +36,32 @@ export function useDeleteComment(postId: string) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: deleteComment,
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: ["post", postId] });
+		},
+	});
+}
+
+export function useUpdatePost(postId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: (payload: UpdatePostPayload) => updatePost(postId, payload),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: ["post", postId] });
+			void queryClient.invalidateQueries({ queryKey: ["posts"] });
+			void queryClient.invalidateQueries({ queryKey: ["posts", "tags"] });
+		},
+	});
+}
+
+export function useUpdateComment(postId: string) {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: ({
+			commentId,
+			...payload
+		}: UpdateCommentPayload & { commentId: string }) =>
+			updateComment(commentId, payload),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({ queryKey: ["post", postId] });
 		},
