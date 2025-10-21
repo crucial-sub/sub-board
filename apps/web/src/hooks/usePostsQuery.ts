@@ -1,39 +1,20 @@
 // 게시글 목록을 페이지네이션/무한스크롤 형태로 조회하는 React Query 훅
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
-
-type PostListResponse = {
-	items: Array<{
-		id: string;
-		title: string;
-		content: string;
-		viewCount: number;
-		createdAt: string;
-		updatedAt: string;
-		author: {
-			id: string;
-			loginId: string;
-			nickname: string;
-		};
-		tags: Array<{
-			name: string;
-		}>;
-	}>;
-	total: number;
-	page: number;
-	pageSize: number;
-};
+import type { PostListResponse } from "@/features/posts/types";
 
 export function usePostsQuery({
 	page,
 	pageSize,
 	keyword,
 	tag,
+	initialData,
 }: {
 	page: number;
 	pageSize?: number;
 	keyword?: string;
 	tag?: string;
+	initialData?: PostListResponse;
 }) {
 	const query = new URLSearchParams({
 		page: String(page),
@@ -50,6 +31,8 @@ export function usePostsQuery({
 		queryKey: ["posts", page, pageSize, keyword, tag],
 		queryFn: () =>
 			apiClient.get<PostListResponse>(`/posts?${query.toString()}`),
+		initialData,
+		staleTime: 1000 * 30,
 	});
 }
 

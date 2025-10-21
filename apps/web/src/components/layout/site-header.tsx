@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
-// 프런트 전역 상단 내비게이션 바를 렌더링한다
-import { useLogoutMutation } from "@/features/auth/hooks/useAuthMutations";
-import { useAuthStore } from "@/features/auth/state/auth-store";
+import { getCurrentUserOnServer } from "@/features/auth/server/get-current-user";
+import { LogoutButton } from "./logout-button";
 
 const NAV_ITEMS = [
 	{ href: "/" as const, label: "홈" },
@@ -12,31 +9,8 @@ const NAV_ITEMS = [
 	{ href: "/posts/new" as const, label: "글 작성" },
 ];
 
-export function SiteHeader() {
-	// Zustand 스토어가 초기 동기화되기 전에는 임시 스켈레톤을 노출한다
-	const user = useAuthStore((state) => state.user);
-	const hasHydrated = useAuthStore((state) => state.hasHydrated);
-	const logoutMutation = useLogoutMutation();
-
-	if (!hasHydrated) {
-		// 초기 렌더에서는 사용자 정보를 아직 모름 → 간단한 로딩 상태로 대체한다
-		return (
-			<header className="border-b border-white/60 bg-white/70 backdrop-blur-2xl">
-				<div className="container flex items-center justify-between py-4">
-					{/* Logo skeleton */}
-					<span className="h-5 w-24 animate-pulse rounded bg-white/60" />
-					{/* Nav + auth skeleton */}
-					<div className="flex items-center gap-6">
-						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
-						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
-						<span className="h-4 w-12 animate-pulse rounded bg-white/60" />
-						<span className="h-4 w-16 animate-pulse rounded bg-white/60" />
-						<span className="h-9 w-20 animate-pulse rounded bg-white/60" />
-					</div>
-				</div>
-			</header>
-		);
-	}
+export async function SiteHeader() {
+	const user = await getCurrentUserOnServer();
 
 	return (
 		<header className="sticky top-0 z-30 border-b border-white/60 bg-white/70 shadow-card backdrop-blur-2xl">
@@ -63,14 +37,7 @@ export function SiteHeader() {
 							<span className="hidden text-sm font-medium text-text-secondary sm:inline">
 								{user.nickname}님
 							</span>
-							<button
-								type="button"
-								onClick={() => logoutMutation.mutate()}
-								disabled={logoutMutation.isPending}
-								className="btn-outline disabled:cursor-not-allowed disabled:opacity-60"
-							>
-								로그아웃
-							</button>
+							<LogoutButton />
 						</div>
 					) : (
 						<Link href="/login" className="btn-gradient">

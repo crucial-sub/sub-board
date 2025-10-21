@@ -166,8 +166,9 @@ model Comment {
 - `useCreatePost`, `useCreateComment`는 성공 시 Query 무효화 및 페이지 전환
 
 ## 7. Next.js 라우팅
-- `/posts` 목록과 `/search` 페이지에서 React Query `keyword` 파라미터와 호환되도록 훅 수정
-- `/posts/[id]` 상세 페이지는 `PostDetail` 컴포넌트에서 댓글 목록과 작성 폼 렌더링
+- `/posts` 목록 페이지는 서버 컴포넌트에서 태그/첫 페이지 데이터를 미리 받아 `PostsPageClient`로 전달한다.
+- `/search` 페이지는 URL `keyword`를 서버에서 읽어 첫 검색 결과를 SSR로 렌더링한 뒤, 폼/페이지 전환만 클라이언트 상태로 유지한다.
+- `/posts/[id]` 상세 페이지는 서버에서 `fetchPostDetail`을 호출해 데이터를 확보하고, 실패 시 `notFound()`로 404를 반환한다.
 
 ## 8. 다음 확장 아이디어
 - 댓글/게시글 작성 시 낙관적 업데이트 적용
@@ -190,7 +191,9 @@ model Comment {
 - 게시글/댓글 작성 폼은 서버에서 내려온 에러 메시지를 그대로 표시해 사용자에게 원인을 안내한다.
 - 댓글 작성 API 경로를 `/comments`로 통일해 백엔드 엔드포인트와 어긋나던 문제를 해결했다.
 - 댓글 상세 화면에서는 댓글 작성자가 자신의 댓글을 삭제할 수 있도록 버튼과 뮤테이션(`useDeleteComment`)을 추가했다.
-- 전역 헤더는 서버에서 전달된 초기 세션으로 바로 렌더되어 깜빡임 없이 로그인/로그아웃 버튼을 노출한다.
+- 전역 헤더를 서버 컴포넌트로 전환해 초기 세션을 SSR 단계에서 반영하고, 로그아웃 버튼만 클라이언트 컴포넌트로 분리했다.
+- 서버 컴포넌트에서도 Nest API를 호출할 수 있도록 `server-api-client.ts`와 `features/posts/server/queries.ts` 헬퍼를 추가했다.
+- `usePostsQuery`, `usePostDetailQuery`, `usePostsTagsQuery`에 `initialData` 옵션을 도입해 SSR에서 받아온 데이터를 즉시 캐시에 주입한다.
 - 메인 홈 Hero 섹션은 인증 상태에 따라 CTA를 바꿔 표시하며, hydrates 되기 전에는 추가 버튼을 숨긴다.
 - 게시판 페이지는 태그 필터 UI로 교체해 각 태그별 게시글 수를 표시하고, 선택한 태그만 목록에 보여준다.
 - 홈 화면은 로그인 여부에 따라 Hero 메시지를 분리해, 로그인 사용자는 최신 게시글 / 새 글 작성 CTA를 바로 볼 수 있도록 개선했다.

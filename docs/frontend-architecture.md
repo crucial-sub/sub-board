@@ -28,7 +28,7 @@
 2. **서버/클라이언트 컴포넌트**  
    - App Router의 기본은 서버 컴포넌트.  
    - 브라우저 상호작용(상태 관리, `useEffect`)이 필요할 땐 컴포넌트 상단에 `"use client"` 선언 → 클라이언트 컴포넌트가 된다.  
-   - 현재 프로젝트는 전부 `"use client"`로 선언해 SSR 기능을 적극 활용하지는 않았지만, 필요 시 서버 컴포넌트로 옮길 수 있다.
+  - 현재는 주요 레이아웃과 데이터 로딩을 서버 컴포넌트가 담당하고, 상호작용이 필요한 영역만 클라이언트 컴포넌트로 분리했다. (예: `SiteHeader`에서 로그아웃 버튼만 클라이언트로 동작, 게시판/검색 페이지는 서버에서 초기 데이터를 공급하고 필터 UI만 클라이언트로 유지)
 
 3. **레이아웃 시스템**  
    - `app/layout.tsx`에서 전역 Provider와 `<body>` 구성을 담당한다.  
@@ -60,12 +60,13 @@ apps/web/src
 │  │  ├─ server          # SSR 인증 유틸 (getCurrentUserOnServer)
 │  │  └─ state           # Zustand 스토어 Provider (AuthStoreProvider)
 │  └─ posts              # 게시글 도메인
-│     ├─ api.ts          # 게시글/댓글 API 래퍼
+│     ├─ api.ts          # 게시글/댓글 작성/삭제 API 래퍼
 │     ├─ components      # PostCard, PostDetail, CommentForm, PostList 등
 │     ├─ hooks           # React Query 훅, mutation 훅, 태그 훅
-│     └─ hooks/useTagsQuery.ts # 태그 목록 조회 훅
+│     ├─ server          # 서버 컴포넌트에서 사용할 fetch 헬퍼 (posts/tags 초기 데이터)
+│     └─ types.ts        # 게시글/댓글/태그 응답 타입
 ├─ hooks                 # 공용 React Query 훅 모음 (usePostsQuery 등)
-├─ lib                   # 공용 유틸 (ApiClient 등)
+├─ lib                   # 공용 유틸 (`api-client`, `server-api-client` 등)
 ├─ providers             # Global Provider (React Query, UI hydration 등)
 └─ styles                # Tailwind 글로벌 CSS
 ```
@@ -104,9 +105,8 @@ export default async function RootLayout({ children }) {
 ## 4. 레이아웃 컴포넌트 & 공통 UI
 
 ### `components/layout/site-header.tsx`
-- `"use client"` 선언 → 클라이언트에서만 렌더.  
-- `useAuthStore`로 로그인 상태와 hydration 여부를 읽고, 로그인 여부에 따라 버튼을 분기한다.  
-- `logout` 버튼 클릭 시 `useLogoutMutation` → `/auth/logout` 호출 후 Zustand 스토어 초기화.
+- 서버 컴포넌트로 동작하며 `getCurrentUserOnServer()`를 호출해 헤더 HTML을 SSR 단계에서 완성한다.  
+- 로그아웃 버튼만 별도의 클라이언트 컴포넌트(`LogoutButton`)로 분리해 `useLogoutMutation`을 실행한다.  
 - 상단바는 반투명 화이트와 얇은 브랜드 언더라인으로 구성돼 Apple식 리퀴드 글래스 톤을 연출하며, `btn-gradient` / `btn-outline` 유틸 클래스로 CTA를 통일했다.
 
 ### Tailwind 사용 패턴
@@ -130,7 +130,7 @@ export default async function RootLayout({ children }) {
 앞서 언급한 Zustand 스토어. 주요 액션:
 - `setFromResponse(payload)`: 로그인/회원가입/리프레시 응답을 상태에 저장.
 - `clearAuth()`: 로그아웃 혹은 401 발생 시 사용자 정보 제거.
-- `markHydrated()`: 세션 동기화 완료 플래그 (헤더가 로딩 상태를 판단하는 데 사용).
+- `markHydrated()`: 세션 동기화 완료 플래그 (클라이언트 훅들이 초기 상태를 구분하는 데 사용).
 
 ### `server/get-current-user.ts`
 - `getCurrentUserOnServer()`가 SSR 단계에서 현재 세션을 조회한다.  
@@ -163,9 +163,10 @@ export function deleteComment(commentId: string) { ... }
 ### 6.2 React Query 훅
 - `usePostsQuery`, `usePostsInfiniteQuery` (`src/hooks/usePostsQuery.ts`)  
   - 서버에서 `page`, `pageSize`, `keyword`, `tag` 쿼리를 처리하도록 맞춘다.  
+  - `initialData` 옵션을 받아 SSR 단계에서 가져온 첫 페이지 데이터를 그대로 캐시에 채워 넣는다.  
   - `useInfiniteQuery`는 무한 스크롤용(추후 홈에서 사용 예정).
-- `usePostDetailQuery`: 게시글 + 댓글 데이터를 가져온다.
-- `usePostsTagsQuery`: `/posts/tags` 응답을 받아 태그 리스트와 게시글 수를 제공.
+- `usePostDetailQuery`: 게시글 + 댓글 데이터를 가져오며, 상세 페이지 역시 `initialData`로 첫 응답을 전달한다.
+- `usePostsTagsQuery`: `/posts/tags` 응답을 받아 태그 리스트와 게시글 수를 제공하고, 서버에서 전달한 태그 요약 배열을 `initialData`로 초기화한다.
 
 ### 6.3 Mutation 훅 (`hooks/usePostMutations.ts`)
 - `useCreatePost`  
@@ -175,22 +176,23 @@ export function deleteComment(commentId: string) { ... }
 
 ### 6.4 컴포넌트
 - **PostCard**: 게시글 요약 카드. 작성자, 시간, 조회 수, 태그 표시.  
-- **PostDetail**: 상세 페이지 UI. 댓글 목록/작성 폼, 태그 링크, 삭제 버튼.  
-- **PostList**: 페이징/무한 스크롤을 mode로 전환.  
+- **PostDetail**: 상세 페이지 UI. 서버에서 전달한 `initialData`로 React Query 캐시를 채우고, 댓글 작성/삭제 같은 상호작용만 클라이언트에서 처리한다.  
+- **PostList**: 페이징/무한 스크롤을 mode로 전환하며, 초기에 전달된 페이지 데이터를 `initialData`로 사용해 첫 렌더 스피너를 없앤다.  
 - **CommentForm**: 댓글 작성 폼. 인증 여부에 따른 UI 처리.
 
 ### 6.5 페이지들
 - `(main)/posts/page.tsx` (게시판 목록)  
-  - 태그 필터 UI, 선택된 태그를 React Query에 전달.  
-  - `useSearchParams()`와 연동해 `?tag=…` 주소 공유 가능.
+  - 서버 컴포넌트에서 `fetchPostsTags`, `fetchPostsList`로 초기 데이터를 받아 `PostsPageClient`에 넘긴다.  
+  - 클라이언트에서는 태그 필터/페이지 전환만 상태로 관리하며, `usePostsTagsQuery`와 `PostList`가 `initialData`를 활용한다.
 - `(main)/posts/new/page.tsx` (새 글 작성)  
   - 태그 입력 UI: 최대 10개, 중복 제거, IME 입력(한글) 처리 (`isComposing` 체크).  
   - 글 작성 후 태그 포함 payload로 `createPost` 호출.  
 - `(main)/search/page.tsx` (검색)  
-  - 키워드 입력 후 `usePostsQuery`로 검색.  
-  - pagination 버튼으로 페이지 이동 가능, 결과 카드를 표시하고 태그 목록도 보여줌.
+  - URL의 `keyword`를 서버에서 읽어 첫 페이지 결과를 미리 패칭한다.
+  - `SearchPageClient`가 폼/페이지네이션 상호작용을 담당하고, React Query는 전달받은 `initialData`를 초기 캐시로 사용한다.
 - `(main)/posts/[id]/page.tsx` (상세)  
-  - `PostDetail` 사용. `PostDetail`에서 태그를 클릭하면 게시판 태그 필터로 이동.
+  - 서버에서 `fetchPostDetail`로 데이터를 가져오고, 실패 시 `notFound()` 처리.  
+  - `PostDetail` 컴포넌트는 전달받은 `initialData` 기반으로 즉시 본문/댓글을 렌더링한다.
 
 ---
 
@@ -201,6 +203,7 @@ export function deleteComment(commentId: string) { ... }
 useQuery({
   queryKey: ["posts", page, pageSize, keyword, tag],
   queryFn: () => apiClient.get(`/posts?...`),
+  initialData, // 서버 컴포넌트에서 전달한 첫 페이지 데이터를 그대로 사용
 });
 ```
 - `queryKey`가 변경될 때만 새 데이터 fetch → 페이지/필터 별로 캐시가 분리됨.

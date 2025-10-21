@@ -2,15 +2,24 @@
 
 // 게시글 상세 정보와 댓글 목록/작성 폼을 함께 렌더링하는 컴포넌트
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
+import type { PostDetailResponse } from "@/features/posts/types";
 import Link from "next/link";
 import { CommentForm } from "./comment-form";
 import { useState } from "react";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { useDeleteComment } from "@/features/posts/hooks/usePostMutations";
 
-export function PostDetail({ id }: { id: string }) {
+export function PostDetail({
+	id,
+	initialData,
+}: {
+	id: string;
+	initialData?: PostDetailResponse | null;
+}) {
 	const [showCommentForm, setShowCommentForm] = useState(false);
-	const { data, isLoading, isError } = usePostDetailQuery(id);
+	const { data, isLoading, isError } = usePostDetailQuery(id, {
+		initialData: initialData ?? undefined,
+	});
 	const user = useAuthStore((state) => state.user);
 	const hasHydrated = useAuthStore((state) => state.hasHydrated);
 	// 댓글 삭제 후 상세 데이터를 무효화하는 뮤테이션

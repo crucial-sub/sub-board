@@ -3,6 +3,7 @@
 // 게시글 목록을 조회하고 무한 스크롤/검색을 처리하는 컴포넌트
 import { useMemo, useState } from "react";
 import { usePostsInfiniteQuery, usePostsQuery } from "@/hooks/usePostsQuery";
+import type { PostListResponse } from "@/features/posts/types";
 import { PostCard } from "./post-card";
 
 // 로딩 상태에서 사용할 스켈레톤 카드의 고정 키 목록
@@ -20,6 +21,7 @@ export function PostList({
 	pageSize = 12,
 	page,
 	onPageChange,
+	initialData,
 }: {
 	keyword?: string;
 	tag?: string;
@@ -27,6 +29,7 @@ export function PostList({
 	pageSize?: number;
 	page?: number;
 	onPageChange?: (page: number) => void;
+	initialData?: PostListResponse;
 }) {
 	if (mode === "paged") {
 		return (
@@ -36,6 +39,7 @@ export function PostList({
 				pageSize={pageSize}
 				page={page}
 				onPageChange={onPageChange}
+				initialData={initialData}
 			/>
 		);
 	}
@@ -116,12 +120,14 @@ function PagedPostList({
 	pageSize,
 	page: controlledPage,
 	onPageChange,
+	initialData,
 }: {
 	keyword?: string;
 	tag?: string;
 	pageSize: number;
 	page?: number;
 	onPageChange?: (page: number) => void;
+	initialData?: PostListResponse;
 }) {
 	const [internalPage, setInternalPage] = useState(1);
 	const isControlled =
@@ -138,6 +144,7 @@ function PagedPostList({
 		pageSize,
 		keyword: trimmedKeyword ? trimmedKeyword : undefined,
 		tag,
+		initialData,
 	});
 	const posts = data?.items ?? [];
 	const total = data?.total ?? 0;
