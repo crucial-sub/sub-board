@@ -160,4 +160,130 @@
 		background-color: rgba(10, 132, 255, 0.12);
 		transform: translateY(-1px);
 	}
+
+	/* Landing Page Sections */
+	.landing-section {
+		position: relative;
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+	}
+
+	/* Colorful Section Backgrounds (KOTA-inspired) */
+	.section-lime {
+		background: linear-gradient(135deg, #d7e1d3 0%, #e5f0e0 100%);
+	}
+
+	.section-sky {
+		background: linear-gradient(135deg, #a8e1ec 0%, #c5eef6 100%);
+	}
+
+	.section-lavender {
+		background: linear-gradient(135deg, #c4b5f3 0%, #ddd4f9 100%);
+	}
+
+	.section-vanilla {
+		background: linear-gradient(135deg, #f8e5cb 0%, #fdf0de 100%);
+	}
+
+	.section-pink {
+		background: linear-gradient(135deg, #efb2d9 0%, #f8d4e9 100%);
+	}
+
+	/* Staggered Fade-in Animations */
+	@keyframes fadeInUp {
+		from {
+			opacity: 0;
+			transform: translateY(30px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes scaleIn {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.animate-fade-in-up {
+		animation: fadeInUp 0.8s ease-out forwards;
+		opacity: 0;
+	}
+
+	.animate-fade-in {
+		animation: fadeIn 0.8s ease-out forwards;
+		opacity: 0;
+	}
+
+	.animate-scale-in {
+		animation: scaleIn 0.8s ease-out forwards;
+		opacity: 0;
+	}
+
+	.delay-100 {
+		animation-delay: 0.1s;
+	}
+
+	.delay-200 {
+		animation-delay: 0.2s;
+	}
+
+	.delay-300 {
+		animation-delay: 0.3s;
+	}
+
+	.delay-400 {
+		animation-delay: 0.4s;
+	}
+
+	.delay-500 {
+		animation-delay: 0.5s;
+	}
+
+	.delay-600 {
+		animation-delay: 0.6s;
+	}
+
+	.delay-700 {
+		animation-delay: 0.7s;
+	}
+
+	.delay-800 {
+		animation-delay: 0.8s;
+	}
+
+	/* Feature Card with Hover Effect */
+	.feature-card {
+		@apply surface-glass p-8 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl;
+	}
+
+	/* Stats Number Animation */
+	.stats-number {
+		@apply text-5xl font-bold bg-clip-text text-transparent;
+		background-image: linear-gradient(120deg, var(--brand), var(--accent-cyan));
+	}
+
+	/* Testimonial Card */
+	.testimonial-card {
+		@apply surface-card p-6 transition-transform duration-300 hover:-translate-y-1;
+	}
 }
