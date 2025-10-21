@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePostsQuery } from "@/hooks/usePostsQuery";
 import type { PostListResponse } from "@/features/posts/types";
+import { formatKoreanDateTime } from "@/lib/formatters";
 
 type Props = {
 	initialKeyword: string;
@@ -137,7 +138,7 @@ export function SearchPageClient({
 										<div className="flex items-center justify-between text-xs text-text-secondary">
 											<span>{post.author.nickname}</span>
 											<time dateTime={post.createdAt}>
-												{new Date(post.createdAt).toLocaleString()}
+												{formatKoreanDateTime(post.createdAt)}
 											</time>
 										</div>
 										<h3 className="text-lg font-semibold text-text-primary">

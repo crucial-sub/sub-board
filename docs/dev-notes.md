@@ -166,6 +166,7 @@ model Comment {
 - `useCreatePost`, `useCreateComment`는 성공 시 Query 무효화 및 페이지 전환
 
 ## 7. Next.js 라우팅
+- 홈 페이지는 서버에서 현재 사용자와 활동 통계를 가져와 `HomePageClient`에 초기 데이터를 제공한다.
 - `/posts` 목록 페이지는 서버 컴포넌트에서 태그/첫 페이지 데이터를 미리 받아 `PostsPageClient`로 전달한다.
 - `/search` 페이지는 URL `keyword`를 서버에서 읽어 첫 검색 결과를 SSR로 렌더링한 뒤, 폼/페이지 전환만 클라이언트 상태로 유지한다.
 - `/posts/[id]` 상세 페이지는 서버에서 `fetchPostDetail`을 호출해 데이터를 확보하고, 실패 시 `notFound()`로 404를 반환한다.
@@ -194,6 +195,7 @@ model Comment {
 - 전역 헤더를 서버 컴포넌트로 전환해 초기 세션을 SSR 단계에서 반영하고, 로그아웃 버튼만 클라이언트 컴포넌트로 분리했다.
 - 서버 컴포넌트에서도 Nest API를 호출할 수 있도록 `server-api-client.ts`와 `features/posts/server/queries.ts` 헬퍼를 추가했다.
 - `usePostsQuery`, `usePostDetailQuery`, `usePostsTagsQuery`에 `initialData` 옵션을 도입해 SSR에서 받아온 데이터를 즉시 캐시에 주입한다.
+- SSR과 클라이언트 렌더에서 동일하게 보이도록 날짜/숫자 포맷터(`lib/formatters.ts`)를 추가하고 `toLocaleString` 의존성을 제거했다.
 - 메인 홈 Hero 섹션은 인증 상태에 따라 CTA를 바꿔 표시하며, hydrates 되기 전에는 추가 버튼을 숨긴다.
 - 게시판 페이지는 태그 필터 UI로 교체해 각 태그별 게시글 수를 표시하고, 선택한 태그만 목록에 보여준다.
 - 홈 화면은 로그인 여부에 따라 Hero 메시지를 분리해, 로그인 사용자는 최신 게시글 / 새 글 작성 CTA를 바로 볼 수 있도록 개선했다.

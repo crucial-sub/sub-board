@@ -1,5 +1,6 @@
 // 게시글 요약 정보를 카드 형태로 보여주는 컴포넌트
 import Link from "next/link";
+import { formatKoreanDateTime, formatNumber } from "@/lib/formatters";
 
 export type PostCardProps = {
 	id: string;
@@ -23,14 +24,14 @@ export function PostCard({
 	author,
 	tags,
 }: PostCardProps) {
-	const created = new Date(createdAt);
+	const formattedCreatedAt = formatKoreanDateTime(createdAt);
 
 	return (
 		<article className="surface-glass group relative overflow-hidden p-5 transition hover:border-brand/60 hover:shadow-popover">
 			<div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 w-full bg-gradient-to-r from-brand via-[var(--accent-cyan)] to-[var(--accent-pink)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 			<div className="flex items-center justify-between text-xs text-text-secondary">
 				<span>{author.nickname}</span>
-				<span>{created.toLocaleString()}</span>
+				<span>{formattedCreatedAt}</span>
 			</div>
 			<h2 className="mt-3 text-lg font-semibold text-text-primary">
 				<Link
@@ -41,7 +42,7 @@ export function PostCard({
 				</Link>
 			</h2>
 			<div className="mt-2 text-xs text-text-secondary">
-				조회수 {viewCount.toLocaleString()}
+				조회수 {formatNumber(viewCount)}
 			</div>
 			{tags?.length ? (
 				<div className="mt-4 flex flex-wrap gap-2 text-[10px] text-text-secondary/80">

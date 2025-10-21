@@ -8,6 +8,7 @@ import { CommentForm } from "./comment-form";
 import { useState } from "react";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { useDeleteComment } from "@/features/posts/hooks/usePostMutations";
+import { formatKoreanDateTime, formatNumber } from "@/lib/formatters";
 
 export function PostDetail({
 	id,
@@ -48,14 +49,13 @@ export function PostDetail({
 		<article className="space-y-8">
 			<header className="surface-card space-y-4 px-8 py-10">
 				<div className="flex flex-wrap items-center gap-3 text-sm text-text-secondary">
-					작성자 {data.author.nickname} · 조회수{" "}
-					{data.viewCount.toLocaleString()}
+					작성자 {data.author.nickname} · 조회수 {formatNumber(data.viewCount)}
 				</div>
 				<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
 					<span className="gradient-text">{data.title}</span>
 				</h1>
 				<time className="text-xs text-text-secondary" dateTime={data.createdAt}>
-					{new Date(data.createdAt).toLocaleString()}
+					{formatKoreanDateTime(data.createdAt)}
 				</time>
 			</header>
 
@@ -115,7 +115,7 @@ export function PostDetail({
 									<span>{comment.author.nickname}</span>
 									<div className="flex items-center gap-2">
 										<time dateTime={comment.createdAt}>
-											{new Date(comment.createdAt).toLocaleString()}
+											{formatKoreanDateTime(comment.createdAt)}
 										</time>
 										{hasHydrated && user?.id === comment.author.id ? (
 											<button

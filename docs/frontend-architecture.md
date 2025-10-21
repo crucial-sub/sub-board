@@ -181,6 +181,9 @@ export function deleteComment(commentId: string) { ... }
 - **CommentForm**: 댓글 작성 폼. 인증 여부에 따른 UI 처리.
 
 ### 6.5 페이지들
+- `(main)/page.tsx` (홈)  
+  - 서버에서 현재 사용자와 `/users/me/stats` 응답을 미리 받아 `HomePageClient`에 전달한다.  
+  - 클라이언트에서는 React Query가 `initialData`로 받은 통계를 재사용하면서 상호작용 없는 UI만 렌더링한다.
 - `(main)/posts/page.tsx` (게시판 목록)  
   - 서버 컴포넌트에서 `fetchPostsTags`, `fetchPostsList`로 초기 데이터를 받아 `PostsPageClient`에 넘긴다.  
   - 클라이언트에서는 태그 필터/페이지 전환만 상태로 관리하며, `usePostsTagsQuery`와 `PostList`가 `initialData`를 활용한다.
