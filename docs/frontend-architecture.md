@@ -117,6 +117,10 @@ export default async function RootLayout({ children }) {
 ### 실시간 위젯 영역
 - 홈 화면 하단의 `CalloutPanels` 영역은 현재 비워 둔 상태이며, 향후 도입할 실시간/외부 데이터 위젯을 배치하기 위한 자리다.
 
+### 실시간 알림 흐름
+- 백엔드는 `NotificationsModule`에서 SSE(`/notifications/stream`)를 제공한다. 새 게시글이 등록되면 모든 구독자에게 `post.created` 이벤트를 브로드캐스트하고, 내 글에 새로운 댓글이 달리면 작성자에게 `comment.created` 이벤트가 전송된다.
+- 프론트엔드는 `NotificationToaster`가 `EventSource`로 스트림을 구독해 알림을 Zustand 스토어에 쌓고, 상단 우측에 토스트 카드 형태로 잠시 표시한다.
+
 ---
 
 ## 5. 인증 도메인 (`features/auth`)

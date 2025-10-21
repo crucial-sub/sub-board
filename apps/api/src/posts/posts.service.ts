@@ -9,12 +9,14 @@ import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
+import { NotificationsService } from "../notifications/notifications.service";
 
 @Injectable()
 export class PostsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly usersService: UsersService,
+		private readonly notificationsService: NotificationsService,
 	) {}
 
 	async create(authorId: string, dto: CreatePostDto) {
@@ -32,11 +34,11 @@ export class PostsService {
 				content: dto.content,
 				tags: tagNames.length
 					? {
-							connectOrCreate: tagNames.map((name) => ({
-								where: { name },
-								create: { name },
-							})),
-						}
+						connectOrCreate: tagNames.map((name) => ({
+							where: { name },
+							create: { name },
+						})),
+					}
 					: undefined,
 			},
 			include: {
@@ -48,6 +50,16 @@ export class PostsService {
 				},
 			},
 		});
+
+		const event = this.notificationsService.createPostCreatedEvent({
+			postId: post.id,
+			title: post.title,
+			author: {
+				id: post.author.id,
+				nickname: post.author.nickname,
+			},
+		});
+		this.notificationsService.broadcast(event);
 
 		return post;
 	}

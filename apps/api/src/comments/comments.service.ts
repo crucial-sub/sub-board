@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import type { CreateCommentDto } from "./dto/create-comment.dto";
 
 @Injectable()
@@ -13,6 +14,7 @@ export class CommentsService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly usersService: UsersService,
+		private readonly notificationsService: NotificationsService,
 	) {}
 
 	async create(authorId: string, dto: CreateCommentDto) {
@@ -28,7 +30,7 @@ export class CommentsService {
 			throw new NotFoundException("작성자를 찾을 수 없습니다.");
 		}
 
-		return this.prisma.comment.create({
+		const comment = await this.prisma.comment.create({
 			data: {
 				postId: dto.postId,
 				authorId,
@@ -43,6 +45,28 @@ export class CommentsService {
 				},
 			},
 		});
+
+		const recipients = new Set<string>();
+		if (post.authorId && post.authorId !== authorId) {
+			recipients.add(post.authorId);
+		}
+		const excerpt = comment.content.length > 50
+			? `${comment.content.slice(0, 47)}...`
+			: comment.content;
+		if (recipients.size > 0) {
+			const event = this.notificationsService.createCommentCreatedEvent({
+				postId: dto.postId,
+				commentId: comment.id,
+				commentExcerpt: excerpt,
+				commentAuthor: {
+					id: comment.author.id,
+					nickname: comment.author.nickname,
+				},
+			});
+			this.notificationsService.notifyUsers(recipients, event);
+		}
+
+		return comment;
 	}
 
 	async remove(commentId: string, authorId: string) {

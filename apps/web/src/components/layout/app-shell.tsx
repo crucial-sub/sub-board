@@ -1,5 +1,8 @@
+"use client";
+
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
+import { NotificationToaster } from "@/features/notifications/components/notification-toaster";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
 	return (
@@ -11,6 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 			</div>
 			<SiteHeader />
 			<main className="container flex-1 py-12">{children}</main>
+ 			<NotificationToaster />
 			<SiteFooter />
 		</div>
 	);

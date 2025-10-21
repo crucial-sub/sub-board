@@ -6,6 +6,7 @@ import { CommentsModule } from "./comments/comments.module";
 import { HealthModule } from "./health/health.module";
 import { PostsModule } from "./posts/posts.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 		PrismaModule,
 		AuthModule,
 		PostsModule,
+		NotificationsModule,
 		CommentsModule,
 		HealthModule,
 	],
