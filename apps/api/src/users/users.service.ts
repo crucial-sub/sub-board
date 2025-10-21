@@ -1,7 +1,13 @@
 // 사용자 CRUD 로직을 담당하는 서비스
-import { Injectable } from "@nestjs/common";
+import {
+	BadRequestException,
+	ConflictException,
+	Injectable,
+	NotFoundException,
+} from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import type { UpdateProfileDto } from "./dto/update-profile.dto";
 
 // 응답으로 노출 가능한 사용자 정보만 추려낸 타입
 export type PublicUser = Pick<
@@ -52,11 +58,37 @@ export class UsersService {
 		return user ? this.toPublic(user) : null;
 	}
 
-	async updateProfile(
-		id: string,
-		data: Prisma.UserUpdateInput,
-	): Promise<PublicUser> {
-		// 프로필 변경 후에도 민감 정보를 숨긴다
+	async updateProfile(id: string, dto: UpdateProfileDto): Promise<PublicUser> {
+		const existing = await this.prisma.user.findUnique({ where: { id } });
+		if (!existing) {
+			throw new NotFoundException("사용자를 찾을 수 없습니다.");
+		}
+
+		const data: Prisma.UserUpdateInput = {};
+		let requiresUpdate = false;
+
+		if (dto.nickname !== undefined) {
+			const trimmed = dto.nickname.trim();
+			if (trimmed.length < 2) {
+				throw new BadRequestException("닉네임은 최소 2자 이상이어야 합니다.");
+			}
+			if (trimmed !== existing.nickname) {
+				const duplicate = await this.prisma.user.findUnique({
+					where: { nickname: trimmed },
+					select: { id: true },
+				});
+				if (duplicate && duplicate.id !== id) {
+					throw new ConflictException("이미 사용 중인 닉네임입니다.");
+				}
+				data.nickname = trimmed;
+				requiresUpdate = true;
+			}
+		}
+
+		if (!requiresUpdate) {
+			return this.toPublic(existing);
+		}
+
 		const user = await this.prisma.user.update({
 			where: { id },
 			data,

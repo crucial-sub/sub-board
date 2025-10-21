@@ -164,6 +164,7 @@ export class PostsService {
 						id: true,
 						content: true,
 						createdAt: true,
+						updatedAt: true,
 						author: {
 							select: { id: true, loginId: true, nickname: true },
 						},

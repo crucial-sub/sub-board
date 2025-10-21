@@ -8,6 +8,7 @@ import { NotificationsService } from "../notifications/notifications.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import type { CreateCommentDto } from "./dto/create-comment.dto";
+import type { UpdateCommentDto } from "./dto/update-comment.dto";
 
 @Injectable()
 export class CommentsService {
@@ -40,6 +41,7 @@ export class CommentsService {
 				id: true,
 				content: true,
 				createdAt: true,
+				updatedAt: true,
 				author: {
 					select: { id: true, loginId: true, nickname: true },
 				},
@@ -83,5 +85,34 @@ export class CommentsService {
 
 		await this.prisma.comment.delete({ where: { id: commentId } });
 		return { id: commentId };
+	}
+
+	async update(commentId: string, authorId: string, dto: UpdateCommentDto) {
+		const comment = await this.prisma.comment.findUnique({
+			where: { id: commentId },
+			select: { authorId: true },
+		});
+		if (!comment) {
+			throw new NotFoundException("댓글을 찾을 수 없습니다.");
+		}
+		if (comment.authorId !== authorId) {
+			throw new ForbiddenException("댓글을 수정할 권한이 없습니다.");
+		}
+
+		const nextContent = dto.content.trim();
+
+		return this.prisma.comment.update({
+			where: { id: commentId },
+			data: { content: nextContent },
+			select: {
+				id: true,
+				content: true,
+				createdAt: true,
+				updatedAt: true,
+				author: {
+					select: { id: true, loginId: true, nickname: true },
+				},
+			},
+		});
 	}
 }

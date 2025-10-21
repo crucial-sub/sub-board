@@ -4,6 +4,7 @@ import {
 	Controller,
 	Delete,
 	Param,
+	Patch,
 	Post,
 	UseGuards,
 } from "@nestjs/common";
@@ -11,6 +12,7 @@ import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
+import { UpdateCommentDto } from "./dto/update-comment.dto";
 
 @Controller("comments")
 export class CommentsController {
@@ -29,5 +31,15 @@ export class CommentsController {
 	@Delete(":id")
 	remove(@Param("id") id: string, @CurrentUser() user: { userId: string }) {
 		return this.commentsService.remove(id, user.userId);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@Patch(":id")
+	update(
+		@Param("id") id: string,
+		@Body() dto: UpdateCommentDto,
+		@CurrentUser() user: { userId: string },
+	) {
+		return this.commentsService.update(id, user.userId, dto);
 	}
 }
