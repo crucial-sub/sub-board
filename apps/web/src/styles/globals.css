@@ -391,4 +391,24 @@
 		clip: auto;
 		white-space: normal;
 	}
+
+	/* Skip Link - 키보드 포커스 시에만 표시 */
+	.skip-link {
+		position: absolute;
+		left: -9999px;
+		z-index: 999;
+		padding: 1em 1.5em;
+		background: var(--brand);
+		color: white;
+		text-decoration: none;
+		border-radius: 0 0 var(--radius-md) 0;
+		font-weight: 600;
+		font-size: 0.875rem;
+		box-shadow: var(--shadow-popover);
+	}
+
+	.skip-link:focus {
+		left: 0;
+		top: 0;
+	}
 }

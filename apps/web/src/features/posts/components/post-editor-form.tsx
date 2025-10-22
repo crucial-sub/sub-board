@@ -35,6 +35,19 @@ export function PostEditorForm({
 	const contentInputId = useId();
 	const tagInputId = useId();
 
+	// Escape 키로 취소
+	useEffect(() => {
+		const handleEscape = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && onCancel) {
+				event.preventDefault();
+				onCancel();
+			}
+		};
+
+		document.addEventListener("keydown", handleEscape);
+		return () => document.removeEventListener("keydown", handleEscape);
+	}, [onCancel]);
+
 	useEffect(() => {
 		if (initialValues) {
 			setTitle(initialValues.title ?? "");

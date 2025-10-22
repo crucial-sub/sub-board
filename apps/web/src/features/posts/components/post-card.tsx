@@ -67,10 +67,15 @@ export function PostCard({
 			{tags?.length ? (
 				<div className="mt-6 flex flex-wrap items-center gap-2">
 					{tags.map((tag) => (
-						<span key={tag.name} className="tag text-xs">
+						<Link
+							key={tag.name}
+							href={`/posts?tag=${encodeURIComponent(tag.name)}`}
+							className="tag text-xs"
+							aria-label={`${tag.name} 태그로 검색`}
+						>
 							<span aria-hidden="true">#</span>
 							{tag.name}
-						</span>
+						</Link>
 					))}
 				</div>
 			) : null}

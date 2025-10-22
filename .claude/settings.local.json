@@ -6,7 +6,8 @@
       "Bash(cd:*)",
       "mcp__serena__list_dir",
       "Bash(npm run typecheck:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(pnpm --filter web typecheck:*)"
     ],
     "deny": [],
     "ask": []

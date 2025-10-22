@@ -157,13 +157,18 @@ export function PostDetail({
 						className="btn-outline px-4 py-2 text-xs font-semibold tracking-wide"
 						aria-label={showCommentForm ? "댓글 작성 취소" : "댓글 작성하기"}
 						aria-expanded={showCommentForm}
+						onKeyDown={(e) => {
+							if (e.key === "Escape" && showCommentForm) {
+								setShowCommentForm(false);
+							}
+						}}
 					>
 						{showCommentForm ? "작성 취소" : "댓글 쓰기"}
 					</button>
 				</div>
 				{showCommentForm ? (
 					<div className="surface-card p-6">
-						<CommentForm postId={id} />
+						<CommentForm postId={id} onCancel={() => setShowCommentForm(false)} />
 					</div>
 				) : null}
 				{deleteMutation.error ? (
