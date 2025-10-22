@@ -1,6 +1,6 @@
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
-import { NotificationToaster } from "@/features/notifications/components/notification-toaster";
+import { NotificationToasterWrapper } from "./notification-toaster-wrapper";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
 	return (
@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 			<main id="main-content" className="container flex-1 py-12">
 				{children}
 			</main>
-			<NotificationToaster />
+			<NotificationToasterWrapper />
 			<SiteFooter />
 		</div>
 	);

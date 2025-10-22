@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import type { AuthResponse } from "@/features/auth/api";
 import { AuthStoreProvider } from "@/features/auth/state/auth-store";
+import { MotionProvider } from "./motion-provider";
 
 type Props = {
 	children: ReactNode;
@@ -14,7 +15,7 @@ export function UiProvider({ children, initialUser }: Props) {
 		<AuthStoreProvider
 			initialState={{ user: initialUser, hasHydrated: true }}
 		>
-			{children}
+			<MotionProvider>{children}</MotionProvider>
 		</AuthStoreProvider>
 	);
 }
