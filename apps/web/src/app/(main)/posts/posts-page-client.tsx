@@ -64,10 +64,20 @@ export function PostsPageClient({
 			? initialPosts ?? undefined
 			: undefined;
 
+	const tagButtonClass = (active: boolean) =>
+		[
+			"relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/30",
+			active
+				? "border border-transparent bg-gradient-to-r from-brand via-accent-cyan to-brand text-white shadow-[0_18px_36px_-18px_rgba(10,132,255,0.65)]"
+				: "border border-border-default bg-white/80 text-text-secondary hover:border-brand hover:text-brand",
+		].join(" ");
+
 	return (
 		<section className="space-y-8">
-			<header className="surface-card space-y-6 px-8 py-10">
-				<div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+			<header className="surface-card relative overflow-hidden space-y-6 px-10 py-12">
+				<div className="pointer-events-none absolute -right-20 top-0 h-56 w-56 rounded-full bg-[var(--accent-cyan)]/35 blur-[110px]" />
+				<div className="pointer-events-none absolute -left-24 bottom-0 h-56 w-56 rounded-full bg-[var(--accent-pink)]/35 blur-[110px]" />
+				<div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
 					<div className="space-y-3">
 						<p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand">
 							Community Feed
@@ -86,7 +96,7 @@ export function PostsPageClient({
 					</Link>
 				</div>
 
-				<div className="space-y-3">
+				<div className="relative space-y-3">
 					<p className="text-xs font-medium uppercase tracking-[0.3em] text-text-subtle">
 						태그 필터링
 					</p>
@@ -97,17 +107,13 @@ export function PostsPageClient({
 								setSelectedTag(undefined);
 								setPage(1);
 							}}
-							className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-								selectedTag === undefined
-									? "bg-brand text-white shadow-card"
-									: "border border-border-default text-text-secondary hover:border-brand hover:text-brand"
-							}`}
+							className={tagButtonClass(selectedTag === undefined)}
 							disabled={isTagsLoading}
 						>
 							전체 보기
 						</button>
 						{isTagsLoading ? (
-							<span className="h-7 w-24 animate-pulse rounded-full border border-border-muted bg-white/60" />
+							<span className="h-8 w-28 animate-pulse rounded-full border border-border-muted bg-white/60" />
 						) : null}
 						{tagButtons.map((tag) => (
 							<button
@@ -119,11 +125,7 @@ export function PostsPageClient({
 									);
 									setPage(1);
 								}}
-								className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-									selectedTag === tag.name
-										? "bg-brand text-white shadow-card"
-										: "border border-border-default text-text-secondary hover:border-brand hover:text-brand"
-								}`}
+								className={tagButtonClass(selectedTag === tag.name)}
 							>
 								#{tag.name} ({tag.count})
 							</button>

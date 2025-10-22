@@ -67,11 +67,11 @@ function InfinitePostList({
 
 	if (isLoading) {
 		return (
-			<div className="space-y-4">
+			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-24 animate-pulse rounded-2xl border border-border-muted bg-white/60"
+						className="h-40 animate-pulse rounded-[28px] bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-[0_28px_60px_-40px_rgba(15,23,42,0.65)]"
 					/>
 				))}
 			</div>
@@ -80,14 +80,18 @@ function InfinitePostList({
 
 	if (isError) {
 		return (
-			<p className="text-sm text-red-500">
+			<p className="rounded-[24px] border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
 				게시글을 불러오는 중 오류가 발생했습니다.
 			</p>
 		);
 	}
 
 	if (posts.length === 0) {
-		return <p className="text-text-secondary">표시할 게시글이 없습니다.</p>;
+		return (
+			<p className="rounded-[24px] border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
+				표시할 게시글이 없습니다.
+			</p>
+		);
 	}
 
 	return (
@@ -163,11 +167,11 @@ function PagedPostList({
 
 	if (isLoading) {
 		return (
-			<div className="space-y-4">
+			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-24 animate-pulse rounded-2xl border border-border-muted bg-white/60"
+						className="h-40 animate-pulse rounded-[28px] bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-[0_28px_60px_-40px_rgba(15,23,42,0.65)]"
 					/>
 				))}
 			</div>
@@ -176,14 +180,18 @@ function PagedPostList({
 
 	if (isError) {
 		return (
-			<p className="text-sm text-red-500">
+			<p className="rounded-[24px] border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
 				게시글을 불러오는 중 오류가 발생했습니다.
 			</p>
 		);
 	}
 
 	if (posts.length === 0) {
-		return <p className="text-text-secondary">표시할 게시글이 없습니다.</p>;
+		return (
+			<p className="rounded-[24px] border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
+				표시할 게시글이 없습니다.
+			</p>
+		);
 	}
 
 	return (

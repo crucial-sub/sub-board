@@ -61,6 +61,7 @@ AnimatedSection.displayName = "AnimatedSection";
 export function HomePageClient({ initialUser, initialStats }: Props) {
 	const user = useAuthStore((state) => state.user);
 	const hasHydrated = useAuthStore((state) => state.hasHydrated);
+	const shouldShowLanding = !(hasHydrated && user);
 
 	const { data: userStats, isLoading: isStatsLoading } = useQuery({
 		queryKey: ["user-stats", user?.id],
@@ -73,9 +74,9 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 		staleTime: 60_000,
 	});
 
-	const heroRef = useRef(null);
+	const heroRef = useRef<HTMLElement | null>(null);
 	const { scrollYProgress } = useScroll({
-		target: heroRef,
+		target: shouldShowLanding ? heroRef : undefined,
 		offset: ["start start", "end start"],
 	});
 
@@ -83,9 +84,9 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 	const heroOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
 
 	// Features 섹션용 스크롤 진행도
-	const featuresRef = useRef(null);
+	const featuresRef = useRef<HTMLElement | null>(null);
 	const { scrollYProgress: featuresProgress } = useScroll({
-		target: featuresRef,
+		target: shouldShowLanding ? featuresRef : undefined,
 		offset: ["start end", "end start"],
 	});
 
