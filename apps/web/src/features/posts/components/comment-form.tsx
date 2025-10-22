@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useCreateComment } from "../hooks/usePostMutations";
 import { useAuthStore } from "@/features/auth/state/auth-store";
+import { ButtonSpinner } from "@/components/ui/skeleton";
 
 export function CommentForm({
 	postId,
@@ -73,9 +74,16 @@ export function CommentForm({
 			<button
 				type="submit"
 				disabled={mutation.isPending}
-				className="btn-gradient disabled:cursor-not-allowed disabled:opacity-60"
+				className="btn-gradient inline-flex items-center disabled:cursor-not-allowed disabled:opacity-60"
 			>
-				댓글 작성
+				{mutation.isPending ? (
+					<>
+						<ButtonSpinner />
+						<span className="ml-2">작성 중...</span>
+					</>
+				) : (
+					"댓글 작성"
+				)}
 			</button>
 			{mutation.error ? (
 				<p className="text-sm text-red-500">{errorMessage}</p>
