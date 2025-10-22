@@ -1,10 +1,10 @@
 "use client";
 
 // 인증 사용자 상태를 저장하고 앱 전역에 배포하는 커스텀 Zustand 스토어
+import type { AuthResponse } from "@/features/auth/api";
 import { createContext, type ReactNode, useContext, useRef } from "react";
 import { useStore } from "zustand";
 import { createStore, type StoreApi } from "zustand/vanilla";
-import type { AuthResponse } from "@/features/auth/api";
 
 export type AuthState = {
 	user: AuthResponse["user"] | null;
@@ -25,9 +25,7 @@ let authStoreClient: AuthStore | null = null;
 function createAuthStore(initialState?: Partial<AuthState>): AuthStore {
 	return createStore<AuthState>((set) => ({
 		user: initialState?.user ?? null,
-		hasHydrated:
-			initialState?.hasHydrated ??
-			(initialState?.user !== undefined),
+		hasHydrated: initialState?.hasHydrated ?? initialState?.user !== undefined,
 		setFromResponse: (payload) =>
 			set({
 				user: payload.user,
@@ -79,7 +77,9 @@ export function useAuthStore<T>(selector: (state: AuthState) => T): T {
 
 export function getAuthStoreClient(): AuthStore {
 	if (!authStoreClient) {
-		throw new Error("AuthStoreProvider가 초기화되기 전에 스토어에 접근했습니다.");
+		throw new Error(
+			"AuthStoreProvider가 초기화되기 전에 스토어에 접근했습니다.",
+		);
 	}
 	return authStoreClient;
 }

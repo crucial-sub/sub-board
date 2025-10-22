@@ -16,6 +16,10 @@ type NotificationEvent = {
 	message: string;
 	href?: string;
 	createdAt?: string;
+	author?: {
+		id: string;
+		nickname: string;
+	};
 };
 
 export function useNotificationStream() {
@@ -47,11 +51,17 @@ export function useNotificationStream() {
 			nextSource.onmessage = (event) => {
 				try {
 					const payload = JSON.parse(event.data) as NotificationEvent;
-					
+
 					if (!payload.type || !payload.title || !payload.message) {
 						return;
 					}
-					
+
+					// 작성자가 현재 사용자인 경우 알림을 표시하지 않음
+					if (payload.author?.id === user?.id) {
+						console.log("[SSE] 본인 작성 알림은 표시하지 않음");
+						return;
+					}
+
 					const id = payload.id ?? crypto.randomUUID();
 					const href = payload.href ?? "/";
 					const createdAt = payload.createdAt ?? new Date().toISOString();
