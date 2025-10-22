@@ -436,6 +436,43 @@ export function useNotificationStream() {
             createdAt,
           });
 
+          // ⭐ React Query 캐시 무효화 - 실시간으로 리스트 업데이트
+          // (모든 사용자가 실시간으로 리스트 업데이트를 받음)
+          if (payload.type === "post.created") {
+            // 게시글 목록 캐시 무효화
+            void queryClient.invalidateQueries({ queryKey: ["posts"] });
+            console.log("[SSE] 게시글 목록 캐시 무효화");
+          } else if (payload.type === "comment.created") {
+            // 댓글 목록 캐시 무효화 (게시글 상세 페이지)
+            void queryClient.invalidateQueries({ queryKey: ["comments"] });
+            console.log("[SSE] 댓글 목록 캐시 무효화");
+          }
+
+          // ⭐ 토스트 알림 표시 조건:
+          // - 게시글: 모든 사용자에게 표시
+          // - 댓글: 게시글 작성자에게만 표시
+          const shouldShowToast =
+            payload.type === "post.created" ||
+            (payload.type === "comment.created" && payload.postAuthorId === user?.id);
+
+          if (!shouldShowToast) {
+            console.log("[SSE] 토스트는 표시하지 않지만 캐시는 무효화됨");
+            return;
+          }
+
+          const id = payload.id ?? crypto.randomUUID();
+          const href = payload.href ?? "/";
+          const createdAt = payload.createdAt ?? new Date().toISOString();
+
+          addNotification({
+            id,
+            type: payload.type,
+            title: payload.title,
+            message: payload.message,
+            href,
+            createdAt,
+          });
+
           // ⭐ 6초 후 자동 제거
           const timerId = setTimeout(() => {
             removeNotification(id);
@@ -491,6 +528,7 @@ export function useNotificationStream() {
 3. **자동 dismiss**: 6초 후 알림 자동 제거
 4. **클린업**: 언마운트 시 모든 타이머 정리 및 연결 종료
 5. **본인 작성 필터링**: 작성자가 현재 사용자인 경우 알림 표시하지 않음
+6. **React Query 캐시 무효화**: 알림 수신 시 자동으로 리스트 업데이트 (실시간 렌더링)
 
 #### 본인 작성 알림 필터링
 
@@ -515,6 +553,74 @@ if (payload.author?.id === user?.id) {
 - 사용자가 게시글을 작성했을 때 자신에게 "새 게시글" 알림이 뜨는 불필요한 상황 방지
 - 댓글 작성 시에도 동일하게 자신에게는 알림이 표시되지 않음
 - 다른 사용자들에게는 정상적으로 알림이 전송됨
+
+#### 실시간 리스트 업데이트 (React Query 캐시 무효화)
+
+SSE로 알림을 받았을 때, 단순히 토스트 메시지만 표시하는 것이 아니라 **실제 데이터 리스트도 자동으로 업데이트**되도록 React Query 캐시 무효화 로직이 적용되어 있습니다.
+
+**캐시 무효화 로직:**
+```typescript
+// ⭐ React Query 캐시 무효화 - 실시간으로 리스트 업데이트
+if (payload.type === "post.created") {
+  // 게시글 목록 캐시 무효화
+  void queryClient.invalidateQueries({ queryKey: ["posts"] });
+  console.log("[SSE] 게시글 목록 캐시 무효화");
+} else if (payload.type === "comment.created") {
+  // 댓글 목록 캐시 무효화 (게시글 상세 페이지)
+  void queryClient.invalidateQueries({ queryKey: ["comments"] });
+  console.log("[SSE] 댓글 목록 캐시 무효화");
+}
+```
+
+**동작 원리:**
+1. SSE 이벤트 수신 시 알림 타입(`post.created`, `comment.created`)에 따라 분기
+2. `queryClient.invalidateQueries()`를 호출하여 해당 query key의 캐시를 무효화
+3. React Query가 자동으로 해당 쿼리를 다시 실행하여 최신 데이터 fetch
+4. 화면에 렌더링된 리스트가 자동으로 업데이트됨 (새로고침 불필요)
+
+**실시간 업데이트 시나리오:**
+
+**게시글 목록 페이지:**
+- 사용자 A가 게시글 목록을 보고 있음
+- 사용자 B가 새 게시글 작성
+- 서버에서 `post.created` 이벤트 broadcast
+- 사용자 A의 브라우저:
+  1. SSE로 알림 수신
+  2. 토스트 메시지 표시: "사용자B님이 새 게시글을 작성했습니다."
+  3. `["posts"]` query key 캐시 무효화
+  4. React Query가 자동으로 게시글 목록 다시 fetch
+  5. **새로고침 없이 새 게시글이 리스트에 자동으로 추가됨**
+
+**게시글 상세 페이지 (댓글):**
+- 사용자 A(게시글 작성자)가 자신의 게시글 상세 페이지에서 댓글 목록을 보고 있음
+- 사용자 C(일반 사용자)도 같은 게시글 상세 페이지를 보고 있음
+- 사용자 B가 댓글 작성
+- 서버에서 `comment.created` 이벤트를 **모든 사용자에게 broadcast**
+- **사용자 A(게시글 작성자)의 브라우저:**
+  1. SSE로 알림 수신
+  2. **토스트 메시지 표시**: "사용자B님이 댓글을 달았습니다." (게시글 작성자에게만)
+  3. `["comments"]` query key 캐시 무효화
+  4. React Query가 자동으로 댓글 목록 다시 fetch
+  5. **새로고침 없이 새 댓글이 리스트에 자동으로 추가됨**
+- **사용자 C(일반 사용자)의 브라우저:**
+  1. SSE로 알림 수신
+  2. **토스트 메시지 표시하지 않음** (게시글 작성자가 아니므로)
+  3. `["comments"]` query key 캐시 무효화
+  4. React Query가 자동으로 댓글 목록 다시 fetch
+  5. **새로고침 없이 새 댓글이 리스트에 자동으로 추가됨**
+
+**기술적 이점:**
+- **양방향 통신 불필요**: SSE(단방향)만으로도 실시간 리스트 업데이트 가능
+- **낙관적 업데이트 불필요**: 캐시 무효화로 서버의 최신 데이터를 자동으로 가져옴
+- **일관성 보장**: 항상 서버의 최신 상태와 동기화됨
+- **간단한 구현**: `invalidateQueries()` 한 줄로 실시간 업데이트 구현
+
+**UX 개선 효과:**
+- ✅ 새로고침 없이 실시간으로 리스트 업데이트
+- ✅ 다른 사용자가 작성한 게시글/댓글이 즉시 화면에 표시됨
+- ✅ 토스트 알림과 실제 데이터가 동기화되어 일관성 있는 UX 제공
+- ✅ 사용자가 수동으로 새로고침할 필요 없음
+- ✅ 댓글은 모든 사용자에게 실시간으로 보이지만, 토스트는 게시글 작성자에게만 표시되어 불필요한 알림 방지
 
 ### 4.2 Notification Store (Zustand)
 

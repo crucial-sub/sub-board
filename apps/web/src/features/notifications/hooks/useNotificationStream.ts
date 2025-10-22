@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { useNotificationStore } from "@/features/notifications/state/notification-store";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
 const API_BASE_URL =
@@ -20,6 +21,8 @@ type NotificationEvent = {
 		id: string;
 		nickname: string;
 	};
+	postAuthorId?: string; // 게시글 작성자 ID (댓글 알림 토스트 필터링용)
+	postId?: string; // 게시글 ID (댓글 알림 시 해당 게시글 캐시 무효화용)
 };
 
 export function useNotificationStream() {
@@ -29,6 +32,7 @@ export function useNotificationStream() {
 	const removeNotification = useNotificationStore(
 		(state) => state.removeNotification,
 	);
+	const queryClient = useQueryClient();
 	const retryTimer = useRef<NodeJS.Timeout | null>(null);
 	const dismissTimers = useRef<Set<NodeJS.Timeout>>(new Set());
 
@@ -59,6 +63,30 @@ export function useNotificationStream() {
 					// 작성자가 현재 사용자인 경우 알림을 표시하지 않음
 					if (payload.author?.id === user?.id) {
 						console.log("[SSE] 본인 작성 알림은 표시하지 않음");
+						return;
+					}
+
+					// ⭐ React Query 캐시 무효화 - 실시간으로 리스트 업데이트
+					// (모든 사용자가 실시간으로 리스트 업데이트를 받음)
+					if (payload.type === "post.created") {
+						// 게시글 목록 캐시 무효화
+						void queryClient.invalidateQueries({ queryKey: ["posts"] });
+						console.log("[SSE] 게시글 목록 캐시 무효화");
+					} else if (payload.type === "comment.created" && payload.postId) {
+						// 해당 게시글 상세 데이터 캐시 무효화 (댓글이 포함된 게시글 상세)
+						void queryClient.invalidateQueries({ queryKey: ["post", payload.postId] });
+						console.log(`[SSE] 게시글 ${payload.postId} 캐시 무효화 (댓글 업데이트)`);
+					}
+
+					// ⭐ 토스트 알림 표시 조건:
+					// - 게시글: 모든 사용자에게 표시
+					// - 댓글: 게시글 작성자에게만 표시
+					const shouldShowToast =
+						payload.type === "post.created" ||
+						(payload.type === "comment.created" && payload.postAuthorId === user?.id);
+
+					if (!shouldShowToast) {
+						console.log("[SSE] 토스트는 표시하지 않지만 캐시는 무효화됨");
 						return;
 					}
 
@@ -115,5 +143,5 @@ export function useNotificationStream() {
 				eventSource.close();
 			}
 		};
-	}, [user, addNotification, removeNotification, clearNotifications]);
+	}, [user, addNotification, removeNotification, clearNotifications, queryClient]);
 }

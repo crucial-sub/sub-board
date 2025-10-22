@@ -48,25 +48,22 @@ export class CommentsService {
 			},
 		});
 
-		const recipients = new Set<string>();
-		if (post.authorId && post.authorId !== authorId) {
-			recipients.add(post.authorId);
-		}
+		// 댓글 생성 이벤트를 모든 사용자에게 broadcast
+		// (실시간 댓글 리스트 업데이트를 위해)
 		const excerpt = comment.content.length > 50
 			? `${comment.content.slice(0, 47)}...`
 			: comment.content;
-		if (recipients.size > 0) {
-			const event = this.notificationsService.createCommentCreatedEvent({
-				postId: dto.postId,
-				commentId: comment.id,
-				commentExcerpt: excerpt,
-				commentAuthor: {
-					id: comment.author.id,
-					nickname: comment.author.nickname,
-				},
-			});
-			this.notificationsService.notifyUsers(recipients, event);
-		}
+		const event = this.notificationsService.createCommentCreatedEvent({
+			postId: dto.postId,
+			commentId: comment.id,
+			commentExcerpt: excerpt,
+			commentAuthor: {
+				id: comment.author.id,
+				nickname: comment.author.nickname,
+			},
+			postAuthorId: post.authorId, // 프론트엔드에서 토스트 필터링용
+		});
+		this.notificationsService.broadcast(event);
 
 		return comment;
 	}

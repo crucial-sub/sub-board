@@ -84,6 +84,7 @@ export class NotificationsService {
 		commentId: string;
 		commentExcerpt: string;
 		commentAuthor: { id: string; nickname: string };
+		postAuthorId?: string; // 게시글 작성자 ID (토스트 필터링용)
 	}): NotificationEvent {
 		return {
 			id: randomUUID(),
@@ -93,6 +94,8 @@ export class NotificationsService {
 			href: `/posts/${payload.postId}#comment-${payload.commentId}`,
 			createdAt: new Date().toISOString(),
 			author: payload.commentAuthor,
+			postAuthorId: payload.postAuthorId,
+			postId: payload.postId, // 프론트엔드에서 해당 게시글 캐시 무효화용
 		};
 	}
 }
