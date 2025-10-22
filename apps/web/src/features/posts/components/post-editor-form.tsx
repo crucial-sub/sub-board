@@ -136,6 +136,7 @@ export function PostEditorForm({
 							type="button"
 							onClick={handleAddTag}
 							className="btn-outline flex w-full justify-center sm:w-auto"
+							aria-label="태그 추가"
 						>
 							추가
 						</button>
@@ -149,6 +150,7 @@ export function PostEditorForm({
 										type="button"
 										onClick={() => handleRemoveTag(tag)}
 										className="text-text-secondary transition hover:text-red-400"
+										aria-label={`${tag} 태그 제거`}
 									>
 										제거
 									</button>

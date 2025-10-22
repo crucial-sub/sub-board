@@ -183,7 +183,11 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								</p>
 								<p className="mt-4 text-3xl font-bold text-text-primary">
 									{isStatsLoading ? (
-										<span className="inline-block h-8 w-24 animate-pulse rounded bg-border-muted" />
+										<span
+											className="inline-block h-8 w-24 animate-pulse rounded bg-border-muted"
+											role="status"
+											aria-label="통계 로딩 중"
+										/>
 									) : (
 										`${userStats?.postCount ?? 0}건`
 									)}
@@ -213,7 +217,11 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								</p>
 								<p className="mt-4 text-3xl font-bold text-text-primary">
 									{isStatsLoading ? (
-										<span className="inline-block h-8 w-24 animate-pulse rounded bg-border-muted" />
+										<span
+											className="inline-block h-8 w-24 animate-pulse rounded bg-border-muted"
+											role="status"
+											aria-label="통계 로딩 중"
+										/>
 									) : (
 										`${userStats?.commentCount ?? 0}건`
 									)}

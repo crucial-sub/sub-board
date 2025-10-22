@@ -3,7 +3,10 @@
     "allow": [
       "Bash(tree:*)",
       "WebFetch(domain:kota.co.uk)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "mcp__serena__list_dir",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,6 +11,6 @@ export function usePostDetailQuery(
 		queryKey: ["post", id],
 		queryFn: () => apiClient.get<PostDetailResponse>(`/posts/${id}`),
 		initialData: options?.initialData,
-		staleTime: 1000 * 30,
+		staleTime: 5 * 60 * 1000, // 5분 - 게시글 내용은 자주 변경되지 않음
 	});
 }

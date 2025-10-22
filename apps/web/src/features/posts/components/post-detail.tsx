@@ -67,7 +67,11 @@ export function PostDetail({
 
 	if (isLoading) {
 		return (
-			<div className="surface-glass p-6 text-sm text-text-secondary">
+			<div
+				className="surface-glass p-6 text-sm text-text-secondary"
+				role="status"
+				aria-live="polite"
+			>
 				게시글을 불러오는 중입니다...
 			</div>
 		);
@@ -151,6 +155,8 @@ export function PostDetail({
 						type="button"
 						onClick={() => setShowCommentForm((prev) => !prev)}
 						className="btn-outline px-4 py-2 text-xs font-semibold tracking-wide"
+						aria-label={showCommentForm ? "댓글 작성 취소" : "댓글 작성하기"}
+						aria-expanded={showCommentForm}
 					>
 						{showCommentForm ? "작성 취소" : "댓글 쓰기"}
 					</button>
@@ -221,6 +227,7 @@ export function PostDetail({
 															}
 															disabled={isDeleting || isAnotherEditing}
 															className="rounded-full border border-brand/20 bg-white/80 px-3 py-1 text-xs font-semibold text-brand transition hover:border-brand hover:bg-brand/10 disabled:cursor-not-allowed disabled:opacity-60"
+															aria-label={`${comment.author.nickname}님의 댓글 수정`}
 														>
 															수정
 														</button>
@@ -231,6 +238,7 @@ export function PostDetail({
 															}
 															disabled={isDeleting || isUpdating}
 															className="rounded-full border border-red-200/70 bg-white/80 px-3 py-1 text-xs font-semibold text-red-400 transition hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+															aria-label={`${comment.author.nickname}님의 댓글 삭제`}
 														>
 															{isDeleting ? "삭제 중..." : "삭제"}
 														</button>

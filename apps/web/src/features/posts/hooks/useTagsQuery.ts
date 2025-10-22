@@ -7,6 +7,6 @@ export function usePostsTagsQuery(options?: { initialData?: PostTagSummary[] }) 
 		queryKey: ["posts", "tags"],
 		queryFn: () => apiClient.get<PostTagSummary[]>("/posts/tags"),
 		initialData: options?.initialData,
-		staleTime: 1000 * 30,
+		staleTime: 10 * 60 * 1000, // 10분 - 태그 목록은 더 드물게 변경됨
 	});
 }
