@@ -67,11 +67,11 @@ function InfinitePostList({
 
 	if (isLoading) {
 		return (
-			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+			<div className="timeline-container">
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-40 animate-pulse rounded-[28px] bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-[0_28px_60px_-40px_rgba(15,23,42,0.65)]"
+						className="h-40 animate-pulse rounded-2xl bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-md"
 					/>
 				))}
 			</div>
@@ -80,7 +80,7 @@ function InfinitePostList({
 
 	if (isError) {
 		return (
-			<p className="rounded-[24px] border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
+			<p className="rounded-2xl border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
 				게시글을 불러오는 중 오류가 발생했습니다.
 			</p>
 		);
@@ -88,7 +88,7 @@ function InfinitePostList({
 
 	if (posts.length === 0) {
 		return (
-			<p className="rounded-[24px] border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
+			<p className="rounded-2xl border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
 				표시할 게시글이 없습니다.
 			</p>
 		);
@@ -96,7 +96,7 @@ function InfinitePostList({
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+			<div className="timeline-container">
 				{posts.map((post) => (
 					<PostCard key={post.id} {...post} />
 				))}
@@ -167,11 +167,11 @@ function PagedPostList({
 
 	if (isLoading) {
 		return (
-			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+			<div className="timeline-container">
 				{LOADING_SKELETON_KEYS.map((key) => (
 					<div
 						key={key}
-						className="h-40 animate-pulse rounded-[28px] bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-[0_28px_60px_-40px_rgba(15,23,42,0.65)]"
+						className="h-40 animate-pulse rounded-2xl bg-gradient-to-br from-white/60 via-white/40 to-white/70 shadow-md"
 					/>
 				))}
 			</div>
@@ -180,7 +180,7 @@ function PagedPostList({
 
 	if (isError) {
 		return (
-			<p className="rounded-[24px] border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
+			<p className="rounded-2xl border border-red-200/70 bg-red-50/80 px-5 py-4 text-sm text-red-500 shadow-sm">
 				게시글을 불러오는 중 오류가 발생했습니다.
 			</p>
 		);
@@ -188,7 +188,7 @@ function PagedPostList({
 
 	if (posts.length === 0) {
 		return (
-			<p className="rounded-[24px] border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
+			<p className="rounded-2xl border border-border-muted bg-white/80 px-6 py-10 text-center text-sm text-text-secondary shadow-sm">
 				표시할 게시글이 없습니다.
 			</p>
 		);
@@ -196,7 +196,7 @@ function PagedPostList({
 
 	return (
 		<div className="space-y-6">
-			<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+			<div className="timeline-container">
 				{posts.map((post) => (
 					<PostCard key={post.id} {...post} />
 				))}
@@ -207,19 +207,19 @@ function PagedPostList({
 					type="button"
 					onClick={() => setPage(Math.max(1, activePage - 1))}
 					disabled={activePage === 1}
-					className="rounded-full border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+					className="rounded-lg border border-border-muted bg-white/70 px-4 py-2 text-sm font-medium text-text-secondary transition hover:border-brand hover:bg-brand/5 hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					이전
+					← 이전
 				</button>
 				{pageNumbers.map((pageNumber) => (
 					<button
 						key={pageNumber}
 						type="button"
 						onClick={() => setPage(pageNumber)}
-						className={`rounded-full px-3 py-1 text-sm transition ${
+						className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
 							pageNumber === activePage
-								? "bg-brand text-white shadow-card"
-								: "border border-border-muted text-text-secondary hover:border-brand hover:text-brand"
+								? "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-md"
+								: "border border-border-muted bg-white/70 text-text-secondary hover:border-brand hover:bg-brand/5 hover:text-brand"
 						}`}
 					>
 						{pageNumber}
@@ -229,9 +229,9 @@ function PagedPostList({
 					type="button"
 					onClick={() => setPage(Math.min(totalPages, activePage + 1))}
 					disabled={activePage === totalPages}
-					className="rounded-full border border-border-muted px-3 py-1 text-sm text-text-secondary transition hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+					className="rounded-lg border border-border-muted bg-white/70 px-4 py-2 text-sm font-medium text-text-secondary transition hover:border-brand hover:bg-brand/5 hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
 				>
-					다음
+					다음 →
 				</button>
 			</div>
 		</div>

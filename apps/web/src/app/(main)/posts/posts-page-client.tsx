@@ -73,75 +73,128 @@ export function PostsPageClient({
 		].join(" ");
 
 	return (
-		<section className="space-y-8">
-			<header className="surface-card relative overflow-hidden space-y-6 px-10 py-12">
-				<div className="pointer-events-none absolute -right-20 top-0 h-56 w-56 rounded-full bg-[var(--accent-cyan)]/35 blur-[110px]" />
-				<div className="pointer-events-none absolute -left-24 bottom-0 h-56 w-56 rounded-full bg-[var(--accent-pink)]/35 blur-[110px]" />
-				<div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
-					<div className="space-y-3">
-						<p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand">
-							Community Feed
-						</p>
-						<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
-							<span className="gradient-text">게시판 라이브 스트림</span>
-						</h1>
-						<p className="max-w-2xl text-sm text-text-secondary">
-							{selectedTag
-								? `현재 #${selectedTag} 태그에 맞춘 게시글을 보고 있어요.`
-								: "인기 태그와 최신 게시글을 한눈에 살펴보세요."}
+		<div className="flex gap-6">
+			{/* 왼쪽 사이드바 */}
+			<aside className="hidden lg:block w-64 flex-shrink-0">
+				<div className="sticky top-20 space-y-6">
+					{/* 실시간 활동 */}
+					<div className="surface-card p-5 space-y-3">
+						<div className="flex items-center gap-2">
+							<div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+							<h2 className="text-sm font-bold text-text-primary uppercase tracking-wider">
+								LIVE
+							</h2>
+						</div>
+						<p className="text-xs text-text-secondary">
+							실시간으로 업데이트되는 커뮤니티 활동
 						</p>
 					</div>
-					<Link href="/posts/new" className="btn-gradient">
-						새 글 작성하기
-					</Link>
-				</div>
 
-				<div className="relative space-y-3">
-					<p className="text-xs font-medium uppercase tracking-[0.3em] text-text-subtle">
-						태그 필터링
-					</p>
-					<div className="flex flex-wrap gap-3">
-						<button
-							type="button"
-							onClick={() => {
-								setSelectedTag(undefined);
-								setPage(1);
-							}}
-							className={tagButtonClass(selectedTag === undefined)}
-							disabled={isTagsLoading}
-						>
-							전체 보기
-						</button>
-						{isTagsLoading ? (
-							<span className="h-8 w-28 animate-pulse rounded-full border border-border-muted bg-white/60" />
-						) : null}
-						{tagButtons.map((tag) => (
+					{/* 태그 필터 */}
+					<div className="surface-card p-5 space-y-4">
+						<h2 className="text-sm font-bold text-text-primary uppercase tracking-wider">
+							주제 탐색
+						</h2>
+						<div className="space-y-2">
 							<button
-								key={tag.name}
 								type="button"
 								onClick={() => {
-									setSelectedTag((prev) =>
-										prev === tag.name ? undefined : tag.name,
-									);
+									setSelectedTag(undefined);
 									setPage(1);
 								}}
-								className={tagButtonClass(selectedTag === tag.name)}
+								className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+									selectedTag === undefined
+										? "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-md"
+										: "text-text-secondary hover:bg-white/60 hover:text-brand"
+								}`}
+								disabled={isTagsLoading}
 							>
-								#{tag.name} ({tag.count})
+								📚 전체 보기
 							</button>
-						))}
+							{isTagsLoading ? (
+								<div className="h-8 w-full animate-pulse rounded-lg bg-white/60" />
+							) : null}
+							{tagButtons.map((tag) => (
+								<button
+									key={tag.name}
+									type="button"
+									onClick={() => {
+										setSelectedTag((prev) =>
+											prev === tag.name ? undefined : tag.name,
+										);
+										setPage(1);
+									}}
+									className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+										selectedTag === tag.name
+											? "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-md"
+											: "text-text-secondary hover:bg-white/60 hover:text-brand"
+									}`}
+								>
+									#{tag.name} <span className="text-xs opacity-70">({tag.count})</span>
+								</button>
+							))}
+						</div>
 					</div>
-				</div>
-			</header>
 
-			<PostList
-				tag={selectedTag}
-				mode="paged"
-				pageSize={12}
-				page={page}
-				onPageChange={setPage}
-				initialData={initialListData}
-			/>
-		</section>
+					{/* 새 글 작성 버튼 */}
+					<Link href="/posts/new" className="btn-gradient w-full block text-center">
+						✍️ 새 글 작성하기
+					</Link>
+				</div>
+			</aside>
+
+			{/* 메인 타임라인 피드 */}
+			<section className="flex-1 space-y-6">
+				{/* 모바일 헤더 */}
+				<header className="surface-card lg:hidden relative overflow-hidden space-y-4 px-6 py-6">
+					<div className="pointer-events-none absolute -right-10 top-0 h-32 w-32 rounded-full bg-[var(--accent-cyan)]/35 blur-[80px]" />
+					<div className="relative flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+							<h1 className="text-xl font-bold gradient-text">
+								라이브 피드
+							</h1>
+						</div>
+						<Link href="/posts/new" className="btn-gradient text-sm">
+							글 작성
+						</Link>
+					</div>
+					<p className="text-xs text-text-secondary">
+						{selectedTag
+							? `#${selectedTag} 태그 필터링 중`
+							: "최신 게시글을 실시간으로 확인하세요"}
+					</p>
+				</header>
+
+				{/* 데스크톱 헤더 */}
+				<header className="hidden lg:block surface-card relative overflow-hidden px-8 py-6">
+					<div className="pointer-events-none absolute -right-16 top-0 h-40 w-40 rounded-full bg-[var(--accent-cyan)]/30 blur-[100px]" />
+					<div className="relative flex items-center justify-between">
+						<div className="space-y-2">
+							<div className="flex items-center gap-3">
+								<div className="h-2.5 w-2.5 rounded-full bg-red-500 animate-pulse" />
+								<h1 className="text-2xl font-bold gradient-text">
+									라이브 피드 스트림
+								</h1>
+							</div>
+							<p className="text-sm text-text-secondary">
+								{selectedTag
+									? `현재 #${selectedTag} 주제의 게시글을 보고 있어요`
+									: "커뮤니티의 모든 학습 기록이 실시간으로 업데이트됩니다"}
+							</p>
+						</div>
+					</div>
+				</header>
+
+				<PostList
+					tag={selectedTag}
+					mode="paged"
+					pageSize={12}
+					page={page}
+					onPageChange={setPage}
+					initialData={initialListData}
+				/>
+			</section>
+		</div>
 	);
 }
