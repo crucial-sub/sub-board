@@ -5,3 +5,8 @@ coverage
 *.tsbuildinfo
 .env
 .env.*
+
+# 프로젝트 문서 및 Claude 관련 폴더
+docs/
+claudedocs/
+.claude/
