@@ -4,6 +4,7 @@ import {
 	createComment,
 	createPost,
 	deleteComment,
+	deletePost,
 	updateComment,
 	updatePost,
 	type UpdateCommentPayload,
@@ -103,6 +104,17 @@ export function useUpdateComment(postId: string) {
 			updateComment(commentId, payload),
 		onSuccess: () => {
 			void queryClient.invalidateQueries({ queryKey: ["post", postId] });
+		},
+	});
+}
+
+export function useDeletePost() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: deletePost,
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: ["posts"] });
+			void queryClient.invalidateQueries({ queryKey: ["posts", "tags"] });
 		},
 	});
 }

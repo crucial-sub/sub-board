@@ -4,11 +4,13 @@
 import { usePostDetailQuery } from "@/features/posts/hooks/usePostDetailQuery";
 import type { PostDetailResponse } from "@/features/posts/types";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CommentForm } from "./comment-form";
 import { useState } from "react";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import {
 	useDeleteComment,
+	useDeletePost,
 	useUpdateComment,
 } from "@/features/posts/hooks/usePostMutations";
 import { formatKoreanDateTime, formatNumber } from "@/lib/formatters";
@@ -20,16 +22,19 @@ export function PostDetail({
 	id: string;
 	initialData?: PostDetailResponse | null;
 }) {
+	const router = useRouter();
 	const [showCommentForm, setShowCommentForm] = useState(false);
 	const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 	const [editingContent, setEditingContent] = useState("");
 	const { data, isLoading, isError } = usePostDetailQuery(id, {
 		initialData: initialData ?? undefined,
+		refetchInterval: 10000, // 10초마다 조회수 업데이트
 	});
 	const user = useAuthStore((state) => state.user);
 	const hasHydrated = useAuthStore((state) => state.hasHydrated);
 	// 댓글 삭제 후 상세 데이터를 무효화하는 뮤테이션
 	const deleteMutation = useDeleteComment(id);
+	const deletePostMutation = useDeletePost();
 	const updateMutation = useUpdateComment(id);
 	const pendingCommentId = deleteMutation.isPending
 		? (deleteMutation.variables as string | undefined)
@@ -62,6 +67,18 @@ export function PostDetail({
 			resetEditingState();
 		} catch (_error) {
 			// 에러는 updateMutation.error를 통해 노출한다
+		}
+	};
+
+	const handleDeletePost = async () => {
+		if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+			return;
+		}
+		try {
+			await deletePostMutation.mutateAsync(id);
+			router.push("/posts");
+		} catch (_error) {
+			// 에러는 UI에 표시됨
 		}
 	};
 
@@ -134,9 +151,9 @@ export function PostDetail({
 					</p>
 				</div>
 
-				{/* 수정 버튼 */}
+				{/* 수정/삭제 버튼 */}
 				{hasHydrated && user?.id === data.author.id ? (
-					<div className="mt-8 flex justify-end">
+					<div className="mt-8 flex justify-end gap-3">
 						<Link
 							href={`/posts/${id}/edit`}
 							className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand to-accent-cyan px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_16px_-8px_rgba(10,132,255,0.5)] transition hover:shadow-[0_12px_24px_-8px_rgba(10,132,255,0.6)] hover:scale-105"
@@ -144,6 +161,24 @@ export function PostDetail({
 							<span>✏️</span>
 							<span>게시글 수정</span>
 						</Link>
+						<button
+							type="button"
+							onClick={handleDeletePost}
+							disabled={deletePostMutation.isPending}
+							className="inline-flex items-center gap-2 rounded-full border-2 border-red-300 bg-white px-5 py-2.5 text-sm font-bold text-red-500 shadow-md transition hover:bg-red-50 hover:border-red-400 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							<span>{deletePostMutation.isPending ? "🔄" : "🗑️"}</span>
+							<span>{deletePostMutation.isPending ? "삭제 중..." : "게시글 삭제"}</span>
+						</button>
+					</div>
+				) : null}
+				{deletePostMutation.error ? (
+					<div className="mt-4 rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-md">
+						<p className="text-sm font-semibold text-red-600">
+							⚠️ {deletePostMutation.error instanceof Error
+								? deletePostMutation.error.message
+								: "게시글 삭제에 실패했습니다."}
+						</p>
 					</div>
 				) : null}
 			</header>

@@ -54,3 +54,7 @@ export function updateComment(
 		body: payload,
 	});
 }
+
+export function deletePost(postId: string) {
+	return apiClient.delete<{ id: string }>(`/posts/${postId}`);
+}
