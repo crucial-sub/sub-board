@@ -27,8 +27,8 @@ export function PostCard({
 	const formattedCreatedAt = formatKoreanDateTime(createdAt);
 	const authorInitial = author.nickname.slice(0, 1).toUpperCase();
 
-	// 5분 이내 게시글은 NEW로 표시
-	const isNew = (Date.now() - new Date(createdAt).getTime()) < 5 * 60 * 1000;
+	// 2분 이내 게시글은 NEW로 표시
+	const isNew = (Date.now() - new Date(createdAt).getTime()) < 2 * 60 * 1000;
 
 	return (
 		<article

@@ -177,7 +177,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							className="grid gap-6 sm:grid-cols-3"
 						>
 							<motion.div variants={scaleIn} className="feature-card">
-								<p className="text-xs uppercase tracking-wide text-text-subtle">
+								<p className="text-sm font-bold uppercase tracking-wide text-brand">
 									내 활동
 								</p>
 								<p className="mt-4 text-3xl font-bold text-text-primary">
@@ -206,7 +206,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							</motion.div>
 
 							<motion.div variants={scaleIn} className="feature-card">
-								<p className="text-xs uppercase tracking-wide text-text-subtle">
+								<p className="text-sm font-bold uppercase tracking-wide text-brand">
 									남긴 댓글
 								</p>
 								<p className="mt-4 text-3xl font-bold text-text-primary">
@@ -226,7 +226,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							</motion.div>
 
 							<motion.div variants={scaleIn} className="feature-card">
-								<p className="text-xs uppercase tracking-wide text-text-subtle">
+								<p className="text-sm font-bold uppercase tracking-wide text-brand">
 									자주 사용하는 태그
 								</p>
 								<div className="mt-4 min-h-[48px]">
@@ -240,8 +240,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 											{userStats.topTags.slice(0, 3).map((tag) => (
 												<Link
 													key={tag.name}
-													href={`/search?tag=${tag.name}`}
-													className="tag"
+													href={`/posts?tag=${encodeURIComponent(tag.name)}`}
+													className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-brand/10 to-accent-cyan/10 border border-brand/20 px-2.5 py-1 text-xs font-semibold text-brand transition hover:from-brand/20 hover:to-accent-cyan/20 hover:border-brand/40"
 												>
 													#{tag.name} · {tag.count}
 												</Link>

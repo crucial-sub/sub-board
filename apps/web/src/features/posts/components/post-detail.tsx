@@ -87,103 +87,128 @@ export function PostDetail({
 
 	return (
 		<article className="space-y-8">
-			<header className="surface-card relative overflow-hidden px-10 py-12">
+			<header className="surface-card relative overflow-hidden px-8 py-10 sm:px-12 sm:py-14">
 				<div className="pointer-events-none absolute -right-24 top-0 h-64 w-64 rounded-full bg-[var(--accent-cyan)]/35 blur-[110px]" />
 				<div className="pointer-events-none absolute -left-20 bottom-0 h-64 w-64 rounded-full bg-[var(--accent-pink)]/35 blur-[110px]" />
-				<div className="space-y-5">
-					<div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
-						<span className="inline-flex items-center gap-2 rounded-full bg-white/75 px-3 py-1 font-semibold text-text-secondary shadow-sm">
+				<div className="space-y-6">
+					{/* 메타 정보 */}
+					<div className="flex flex-wrap items-center gap-2">
+						<span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand/10 to-accent-cyan/10 border border-brand/20 px-3.5 py-1.5 text-xs font-bold text-brand shadow-sm">
 							<span aria-hidden="true">👤</span>
 							{data.author.nickname}
 						</span>
-						<span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/60 px-3 py-1 font-semibold text-text-secondary">
+						<span className="inline-flex items-center gap-2 rounded-full border border-border-muted bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-text-secondary shadow-sm">
 							<span aria-hidden="true">📅</span>
 							{formatKoreanDateTime(data.createdAt)}
 						</span>
-						<span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/60 px-3 py-1 font-semibold text-text-secondary">
+						<span className="inline-flex items-center gap-2 rounded-full border border-border-muted bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-text-secondary shadow-sm">
 							<span aria-hidden="true">👁</span>
-							{formatNumber(data.viewCount)}회 열람
+							{formatNumber(data.viewCount)}
 						</span>
 					</div>
-					<h1 className="text-3xl font-semibold text-text-primary sm:text-4xl">
-						<span className="gradient-text">{data.title}</span>
+
+					{/* 제목 */}
+					<h1 className="text-3xl font-bold text-text-primary leading-tight sm:text-4xl lg:text-5xl">
+						{data.title}
 					</h1>
-					<p className="text-xs text-text-subtle">
+
+					{/* 태그 */}
+					{data.tags.length ? (
+						<div className="flex flex-wrap items-center gap-2">
+							{data.tags.map((tag) => (
+								<Link
+									key={tag.name}
+									href={`/posts?tag=${encodeURIComponent(tag.name)}`}
+									className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-brand/10 to-accent-cyan/10 border border-brand/20 px-2.5 py-1 text-xs font-semibold text-brand transition hover:from-brand/20 hover:to-accent-cyan/20 hover:border-brand/40"
+								>
+									<span aria-hidden="true">#</span>
+									{tag.name}
+								</Link>
+							))}
+						</div>
+					) : null}
+
+					{/* 업데이트 시간 */}
+					<p className="text-xs font-medium text-text-subtle">
 						최종 업데이트: {formatKoreanDateTime(data.updatedAt)}
 					</p>
 				</div>
+
+				{/* 수정 버튼 */}
 				{hasHydrated && user?.id === data.author.id ? (
-					<div className="mt-6 flex justify-end">
+					<div className="mt-8 flex justify-end">
 						<Link
 							href={`/posts/${id}/edit`}
-							className="inline-flex items-center justify-center rounded-full border border-brand/30 bg-white/80 px-4 py-2 text-sm font-semibold text-brand shadow-[0_16px_32px_-26px_rgba(10,132,255,0.65)] transition hover:border-brand hover:bg-brand/10"
+							className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand to-accent-cyan px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_16px_-8px_rgba(10,132,255,0.5)] transition hover:shadow-[0_12px_24px_-8px_rgba(10,132,255,0.6)] hover:scale-105"
 						>
-							게시글 수정
+							<span>✏️</span>
+							<span>게시글 수정</span>
 						</Link>
 					</div>
 				) : null}
 			</header>
 
-			<div className="surface-card whitespace-pre-wrap px-10 py-12 text-base leading-relaxed text-text-secondary">
-				{data.content}
+			{/* 본문 */}
+			<div className="surface-card px-8 py-10 sm:px-12 sm:py-14">
+				<div className="prose prose-sm sm:prose-base max-w-none">
+					<p className="whitespace-pre-wrap text-base leading-relaxed text-text-primary sm:text-lg">
+						{data.content}
+					</p>
+				</div>
 			</div>
 
-			{data.tags.length ? (
-				<div className="surface-glass flex flex-wrap items-center gap-3 px-7 py-5">
-					<span className="text-xs font-semibold uppercase tracking-[0.25em] text-text-subtle">
-						Tags
-					</span>
-					{data.tags.map((tag) => (
-						<Link
-							key={tag.name}
-							href={`/posts?tag=${encodeURIComponent(tag.name)}`}
-							className="tag transition hover:scale-105"
+			{/* 댓글 섹션 */}
+			<section className="space-y-6">
+				<div className="surface-card px-8 py-6">
+					<div className="flex items-center justify-between">
+						<h2 className="text-xl font-bold text-text-primary">
+							💬 댓글 <span className="text-base font-semibold text-brand">({data.comments.length})</span>
+						</h2>
+						<button
+							type="button"
+							onClick={() => setShowCommentForm((prev) => !prev)}
+							className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold shadow-md transition ${
+								showCommentForm
+									? "bg-white border border-border-muted text-text-secondary hover:bg-gray-50"
+									: "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-[0_8px_16px_-8px_rgba(10,132,255,0.5)] hover:shadow-[0_12px_24px_-8px_rgba(10,132,255,0.6)] hover:scale-105"
+							}`}
+							aria-label={showCommentForm ? "댓글 작성 취소" : "댓글 작성하기"}
+							aria-expanded={showCommentForm}
+							onKeyDown={(e) => {
+								if (e.key === "Escape" && showCommentForm) {
+									setShowCommentForm(false);
+								}
+							}}
 						>
-							<span aria-hidden="true">#</span>
-							{tag.name}
-						</Link>
-					))}
+							<span>{showCommentForm ? "❌" : "✍️"}</span>
+							<span>{showCommentForm ? "작성 취소" : "댓글 쓰기"}</span>
+						</button>
+					</div>
 				</div>
-			) : null}
 
-			<section className="space-y-4">
-				<div className="flex items-center justify-between rounded-[22px] border border-white/60 bg-white/70 px-5 py-3 shadow-sm">
-					<h2 className="text-lg font-semibold text-text-primary">
-						댓글 <span className="text-sm text-text-subtle">({data.comments.length})</span>
-					</h2>
-					<button
-						type="button"
-						onClick={() => setShowCommentForm((prev) => !prev)}
-						className="btn-outline px-4 py-2 text-xs font-semibold tracking-wide"
-						aria-label={showCommentForm ? "댓글 작성 취소" : "댓글 작성하기"}
-						aria-expanded={showCommentForm}
-						onKeyDown={(e) => {
-							if (e.key === "Escape" && showCommentForm) {
-								setShowCommentForm(false);
-							}
-						}}
-					>
-						{showCommentForm ? "작성 취소" : "댓글 쓰기"}
-					</button>
-				</div>
 				{showCommentForm ? (
-					<div className="surface-card p-6">
+					<div className="surface-card px-8 py-8">
 						<CommentForm postId={id} onCancel={() => setShowCommentForm(false)} />
 					</div>
 				) : null}
 				{deleteMutation.error ? (
-					<p className="rounded-[20px] border border-red-200/70 bg-red-50/80 px-4 py-3 text-sm text-red-500">
-						{deleteMutation.error instanceof Error
-							? deleteMutation.error.message
-							: "댓글 삭제에 실패했습니다."}
-					</p>
+					<div className="rounded-2xl border-2 border-red-300 bg-red-50 px-5 py-4 shadow-md">
+						<p className="text-sm font-semibold text-red-600">
+							⚠️ {deleteMutation.error instanceof Error
+								? deleteMutation.error.message
+								: "댓글 삭제에 실패했습니다."}
+						</p>
+					</div>
 				) : null}
+
 				{data.comments.length === 0 ? (
-					<p className="rounded-2xl border border-border-muted bg-white/80 px-6 py-8 text-center text-sm text-text-secondary shadow-sm">
-						첫 댓글을 남겨보세요.
-					</p>
+					<div className="surface-card px-8 py-12 text-center">
+						<p className="text-base font-medium text-text-secondary">
+							💭 아직 댓글이 없어요. 첫 댓글을 남겨보세요!
+						</p>
+					</div>
 				) : (
-					<ul className="space-y-4">
+					<ul className="space-y-5">
 						{data.comments.map((comment) => {
 							const isAuthor =
 								hasHydrated && user?.id === comment.author.id;
@@ -201,21 +226,24 @@ export function PostDetail({
 							return (
 								<li
 									key={comment.id}
-									className="surface-card relative overflow-hidden p-6 text-sm shadow-sm"
+									className="surface-card relative overflow-hidden px-6 py-6 sm:px-8 sm:py-7"
 								>
 									<div className="relative flex items-start gap-4">
-										<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 text-xs font-semibold text-brand shadow-[0_12px_22px_-20px_rgba(15,23,42,0.45)]">
+										{/* 프로필 아이콘 */}
+										<span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand/20 to-accent-cyan/20 text-sm font-bold text-brand border-2 border-white shadow-md">
 											{commentInitial}
 										</span>
-										<div className="flex-1 space-y-3">
-											<div className="flex flex-wrap items-center justify-between gap-3">
+
+										<div className="flex-1 space-y-4">
+											{/* 작성자 & 시간 & 액션 버튼 */}
+											<div className="flex flex-wrap items-start justify-between gap-3">
 												<div>
-													<p className="text-sm font-semibold text-text-primary">
+													<p className="text-base font-bold text-text-primary">
 														{comment.author.nickname}
 													</p>
 													<time
 														dateTime={comment.createdAt}
-														className="text-xs text-text-subtle"
+														className="text-xs font-medium text-text-subtle"
 													>
 														{formatKoreanDateTime(comment.createdAt)}
 													</time>
@@ -231,10 +259,10 @@ export function PostDetail({
 																)
 															}
 															disabled={isDeleting || isAnotherEditing}
-															className="rounded-full border border-brand/20 bg-white/80 px-3 py-1 text-xs font-semibold text-brand transition hover:border-brand hover:bg-brand/10 disabled:cursor-not-allowed disabled:opacity-60"
+															className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-brand/10 to-accent-cyan/10 border border-brand/20 px-3 py-1.5 text-xs font-bold text-brand transition hover:from-brand/20 hover:to-accent-cyan/20 hover:border-brand/40 disabled:cursor-not-allowed disabled:opacity-60"
 															aria-label={`${comment.author.nickname}님의 댓글 수정`}
 														>
-															수정
+															✏️ 수정
 														</button>
 														<button
 															type="button"
@@ -242,28 +270,31 @@ export function PostDetail({
 																deleteMutation.mutateAsync(comment.id)
 															}
 															disabled={isDeleting || isUpdating}
-															className="rounded-full border border-red-200/70 bg-white/80 px-3 py-1 text-xs font-semibold text-red-400 transition hover:border-red-400 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+															className="inline-flex items-center gap-1 rounded-full border-2 border-red-300 bg-white px-3 py-1.5 text-xs font-bold text-red-500 transition hover:bg-red-50 hover:border-red-400 disabled:cursor-not-allowed disabled:opacity-60"
 															aria-label={`${comment.author.nickname}님의 댓글 삭제`}
 														>
-															{isDeleting ? "삭제 중..." : "삭제"}
+															{isDeleting ? "🔄 삭제 중..." : "🗑️ 삭제"}
 														</button>
 													</div>
 												) : null}
 											</div>
+
+											{/* 댓글 내용 / 수정 폼 */}
 											{isEditing ? (
-												<div className="space-y-3">
+												<div className="space-y-4">
 													<textarea
 														value={editingContent}
 														onChange={(event) =>
 															setEditingContent(event.target.value)
 														}
-														className="w-full rounded-2xl border border-border-muted bg-white/90 px-3 py-2 text-sm text-text-primary shadow-inner focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-														rows={3}
+														className="w-full rounded-2xl border-2 border-border-muted bg-white px-4 py-3 text-sm text-text-primary shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30 transition"
+														rows={4}
+														placeholder="댓글 내용을 입력하세요..."
 													/>
 													{updateMutation.error &&
 													updateTargetCommentId === comment.id ? (
-														<p className="text-xs text-red-500">
-															{updateErrorMessage}
+														<p className="text-xs font-semibold text-red-500">
+															⚠️ {updateErrorMessage}
 														</p>
 													) : null}
 													<div className="flex justify-end gap-2">
@@ -271,7 +302,7 @@ export function PostDetail({
 															type="button"
 															onClick={resetEditingState}
 															disabled={isUpdating}
-															className="btn-outline px-4 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+															className="rounded-full border-2 border-border-muted bg-white px-5 py-2 text-sm font-bold text-text-secondary transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
 														>
 															취소
 														</button>
@@ -279,16 +310,18 @@ export function PostDetail({
 															type="button"
 															onClick={handleUpdateComment}
 															disabled={isUpdating}
-															className="btn-gradient px-5 py-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+															className="rounded-full bg-gradient-to-r from-brand to-accent-cyan px-6 py-2 text-sm font-bold text-white shadow-md transition hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
 														>
-															{isUpdating ? "수정 중..." : "저장"}
+															{isUpdating ? "💾 수정 중..." : "💾 저장"}
 														</button>
 													</div>
 												</div>
 											) : (
-												<p className="whitespace-pre-wrap rounded-2xl bg-white/70 px-4 py-3 text-sm text-text-secondary shadow-[0_18px_35px_-30px_rgba(15,23,42,0.55)]">
-													{comment.content}
-												</p>
+												<div className="rounded-2xl bg-gradient-to-br from-white/90 to-white/70 border border-border-muted px-5 py-4 shadow-sm">
+													<p className="whitespace-pre-wrap text-sm leading-relaxed text-text-primary sm:text-base">
+														{comment.content}
+													</p>
+												</div>
 											)}
 										</div>
 									</div>

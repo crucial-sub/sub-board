@@ -166,6 +166,55 @@ export function PostsPageClient({
 					</p>
 				</header>
 
+				{/* 모바일 태그 필터 */}
+				<div className="surface-card lg:hidden p-5 space-y-3">
+					<h2 className="text-sm font-bold text-text-primary uppercase tracking-wider">
+						주제 탐색
+					</h2>
+					<div className="flex flex-wrap gap-2">
+						<button
+							type="button"
+							onClick={() => {
+								setSelectedTag(undefined);
+								setPage(1);
+							}}
+							className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+								selectedTag === undefined
+									? "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-md"
+									: "border border-border-default bg-white/80 text-text-secondary hover:border-brand hover:text-brand"
+							}`}
+							disabled={isTagsLoading}
+						>
+							📚 전체
+						</button>
+						{isTagsLoading ? (
+							<>
+								<span className="h-7 w-16 animate-pulse rounded-full bg-white/60" />
+								<span className="h-7 w-16 animate-pulse rounded-full bg-white/60" />
+							</>
+						) : null}
+						{tagButtons.map((tag) => (
+							<button
+								key={tag.name}
+								type="button"
+								onClick={() => {
+									setSelectedTag((prev) =>
+										prev === tag.name ? undefined : tag.name,
+									);
+									setPage(1);
+								}}
+								className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+									selectedTag === tag.name
+										? "bg-gradient-to-r from-brand to-accent-cyan text-white shadow-md"
+										: "border border-border-default bg-white/80 text-text-secondary hover:border-brand hover:text-brand"
+								}`}
+							>
+								#{tag.name} <span className="text-[10px] opacity-70">({tag.count})</span>
+							</button>
+						))}
+					</div>
+				</div>
+
 				{/* 데스크톱 헤더 */}
 				<header className="hidden lg:block surface-card relative overflow-hidden px-8 py-6">
 					<div className="pointer-events-none absolute -right-16 top-0 h-40 w-40 rounded-full bg-[var(--accent-cyan)]/30 blur-[100px]" />

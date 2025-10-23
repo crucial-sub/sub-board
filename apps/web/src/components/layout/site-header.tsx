@@ -19,12 +19,12 @@ export async function SiteHeader() {
 					{/* Logo */}
 					<Link
 						href="/"
-						className="group mb-1 flex items-center gap-2 text-lg font-semibold tracking-tight text-text-primary transition hover:text-brand"
+						className="group mb-1 flex items-center gap-3 transition"
 					>
-						<span className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 shadow-card transition group-hover:scale-105">
-							<span className="gradient-text text-lg">SB</span>
+						<span className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-accent-cyan shadow-[0_8px_16px_-8px_rgba(10,132,255,0.4)] transition group-hover:scale-105 group-hover:shadow-[0_12px_24px_-8px_rgba(10,132,255,0.5)]">
+							<span className="text-xl font-extrabold text-white">SB</span>
 						</span>
-						<span className="hidden sm:inline">Sub Board</span>
+						<span className="hidden text-xl font-extrabold gradient-text sm:inline">Sub Board</span>
 					</Link>
 
 					{/* Bookmark Tab Navigation */}
@@ -40,7 +40,7 @@ export async function SiteHeader() {
 						))}
 						{user ? (
 							<div className="bookmark-tab-user">
-								<span className="hidden text-sm font-medium text-text-secondary sm:inline">
+								<span className="hidden text-sm font-bold gradient-text sm:inline">
 									{user.nickname}님
 								</span>
 								<Link

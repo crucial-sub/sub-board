@@ -23,9 +23,10 @@ export default async function PostDetailPage({ params }: Props) {
 		<div className="space-y-6">
 			<Link
 				href="/posts"
-				className="text-sm text-text-secondary hover:text-text-primary"
+				className="group inline-flex items-center gap-2 rounded-full border border-border-muted bg-white/70 px-4 py-2 text-sm font-semibold text-text-secondary shadow-sm transition hover:border-brand hover:bg-brand/5 hover:text-brand hover:shadow-md"
 			>
-				← 목록으로 돌아가기
+				<span className="text-lg transition group-hover:-translate-x-1">←</span>
+				<span>목록으로 돌아가기</span>
 			</Link>
 			<PostDetail id={id} initialData={initialPost} />
 		</div>
