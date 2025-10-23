@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, forwardRef } from "react";
-import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
 import type { AuthResponse } from "@/features/auth/api";
 import { useAuthStore } from "@/features/auth/state/auth-store";
 import { fetchUserStats, type UserStats } from "@/features/users/api";
+import { useQuery } from "@tanstack/react-query";
+import { motion, useScroll, useTransform } from "framer-motion";
+import Link from "next/link";
+import { forwardRef, useRef } from "react";
 
 type Props = {
 	initialUser: AuthResponse["user"] | null;
@@ -69,7 +69,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 		enabled: Boolean(hasHydrated && user?.id),
 		initialData:
 			initialUser && initialUser.id === user?.id
-				? initialStats ?? undefined
+				? (initialStats ?? undefined)
 				: undefined,
 		staleTime: 60_000,
 	});
@@ -91,7 +91,11 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 	});
 
 	const featuresY = useTransform(featuresProgress, [0, 0.5, 1], [50, 0, -50]);
-	const featuresOpacity = useTransform(featuresProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+	const featuresOpacity = useTransform(
+		featuresProgress,
+		[0, 0.3, 0.7, 1],
+		[0, 1, 1, 0],
+	);
 
 	if (hasHydrated && user) {
 		return (
@@ -126,8 +130,8 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									variants={fadeInUp}
 									className="max-w-2xl text-lg text-text-secondary"
 								>
-									맞춤 태그로 큐레이션된 최신 게시글을 살펴보고, 영감이 떠오를 때
-									바로 새 글을 발행해 보세요.
+									맞춤 태그로 큐레이션된 최신 게시글을 살펴보고, 영감이 떠오를
+									때 바로 새 글을 발행해 보세요.
 								</motion.p>
 								<motion.div
 									variants={fadeInUp}
@@ -172,12 +176,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							variants={staggerContainer}
 							className="grid gap-6 sm:grid-cols-3"
 						>
-							<motion.div
-								variants={scaleIn}
-								
-								
-								className="feature-card"
-							>
+							<motion.div variants={scaleIn} className="feature-card">
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
 									내 활동
 								</p>
@@ -206,12 +205,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								</p>
 							</motion.div>
 
-							<motion.div
-								variants={scaleIn}
-								
-								
-								className="feature-card"
-							>
+							<motion.div variants={scaleIn} className="feature-card">
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
 									남긴 댓글
 								</p>
@@ -231,12 +225,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								</p>
 							</motion.div>
 
-							<motion.div
-								variants={scaleIn}
-								
-								
-								className="feature-card"
-							>
+							<motion.div variants={scaleIn} className="feature-card">
 								<p className="text-xs uppercase tracking-wide text-text-subtle">
 									자주 사용하는 태그
 								</p>
@@ -301,7 +290,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: 5 }}
-										
 									>
 										✍️
 									</motion.div>
@@ -318,7 +306,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: -5 }}
-										
 									>
 										📚
 									</motion.div>
@@ -335,7 +322,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: 5 }}
-										
 									>
 										🔎
 									</motion.div>
@@ -352,7 +338,6 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									<motion.div
 										className="text-4xl mb-3"
 										whileHover={{ scale: 1.1, rotate: -5 }}
-										
 									>
 										👤
 									</motion.div>
@@ -389,8 +374,14 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 					<div className="float-slow absolute left-[10%] top-[20%] h-20 w-20 rounded-2xl bg-gradient-to-br from-brand/20 to-accent-cyan/20 backdrop-blur-sm" />
 					<div className="float-diagonal absolute right-[15%] top-[35%] h-24 w-24 rounded-full bg-gradient-to-br from-accent-pink/20 to-brand/20 backdrop-blur-sm" />
 					<div className="float-gentle absolute left-[70%] top-[15%] h-16 w-16 rounded-xl bg-gradient-to-br from-accent-cyan/20 to-accent-pink/20 backdrop-blur-sm" />
-					<div className="float-slow absolute right-[25%] bottom-[25%] h-14 w-14 rounded-full bg-gradient-to-br from-brand/15 to-accent-pink/15 backdrop-blur-sm" style={{animationDelay: '1s'}} />
-					<div className="float-diagonal absolute left-[20%] bottom-[30%] h-18 w-18 rounded-2xl bg-gradient-to-br from-accent-cyan/15 to-brand/15 backdrop-blur-sm" style={{animationDelay: '2s'}} />
+					<div
+						className="float-slow absolute right-[25%] bottom-[25%] h-14 w-14 rounded-full bg-gradient-to-br from-brand/15 to-accent-pink/15 backdrop-blur-sm"
+						style={{ animationDelay: "1s" }}
+					/>
+					<div
+						className="float-diagonal absolute left-[20%] bottom-[30%] h-18 w-18 rounded-2xl bg-gradient-to-br from-accent-cyan/15 to-brand/15 backdrop-blur-sm"
+						style={{ animationDelay: "2s" }}
+					/>
 				</div>
 
 				<div className="container relative z-10 mx-auto max-w-6xl px-6 py-20 text-center">
@@ -403,7 +394,7 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							variants={fadeInUp}
 							className="text-xs font-semibold uppercase tracking-[0.5em] text-brand"
 						>
-							Next-gen Community Board
+							Real-time Learning Board
 						</motion.p>
 						<motion.h1
 							variants={fadeInUp}
@@ -417,30 +408,29 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							variants={fadeInUp}
 							className="mx-auto mt-8 max-w-2xl text-lg text-text-secondary sm:text-xl"
 						>
-							Next.js, React Query, Tailwind CSS로 완성한 커뮤니티 공간입니다.
+							실시간 알림과 즉각적인 피드백으로 살아있는 커뮤니티를 경험하세요.
 							<br />
-							아이디어를 자유롭게 나누고, 관심 있는 주제를 직접 큐레이션해
-							보세요.
+							Next.js 15, React Query, SSE로 구현한 타임라인 피드입니다.
 						</motion.p>
 						<motion.div
 							variants={fadeInUp}
 							className="mt-10 flex flex-wrap justify-center gap-4"
 						>
-							<motion.div  whileTap={{ scale: 0.95 }}>
-								<Link href="/posts" className="btn-gradient text-base px-8 py-3">
-									게시글 둘러보기
+							<motion.div whileTap={{ scale: 0.95 }}>
+								<Link
+									href="/posts"
+									className="btn-gradient text-base px-8 py-3"
+								>
+									라이브 피드 보기
 								</Link>
 							</motion.div>
 							{hasHydrated ? (
-								<motion.div
-									
-									whileTap={{ scale: 0.95 }}
-								>
+								<motion.div whileTap={{ scale: 0.95 }}>
 									<Link
 										href="/login"
 										className="btn-outline text-base px-8 py-3"
 									>
-										탐험을 시작할게요
+										시작하기
 									</Link>
 								</motion.div>
 							) : (
@@ -448,41 +438,19 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									className="btn-outline text-base px-8 py-3 invisible pointer-events-none select-none"
 									aria-hidden="true"
 								>
-									탐험을 시작할게요
+									시작하기
 								</span>
 							)}
-						</motion.div>
-
-						{/* Hero Stats with Scale Animation */}
-						<motion.div
-							variants={staggerContainer}
-							className="mt-20 grid gap-8 sm:grid-cols-3"
-						>
-							{[
-								{ id: "posts", number: "500+", label: "커뮤니티 게시글" },
-								{ id: "members", number: "100+", label: "활동 중인 멤버" },
-								{ id: "tags", number: "50+", label: "다양한 주제 태그" },
-							].map((stat) => (
-								<motion.div
-									key={stat.id}
-									variants={scaleIn}
-									
-									
-									className="surface-glass p-6 cursor-default"
-								>
-									<div className="stats-number">{stat.number}</div>
-									<p className="mt-2 text-sm font-medium text-text-secondary">
-										{stat.label}
-									</p>
-								</motion.div>
-							))}
 						</motion.div>
 					</motion.div>
 				</div>
 			</section>
 
 			{/* Features Section */}
-			<AnimatedSection ref={featuresRef} className="section-lime py-24 relative overflow-hidden">
+			<AnimatedSection
+				ref={featuresRef}
+				className="section-lime py-24 relative overflow-hidden"
+			>
 				{/* 스크롤에 따라 움직이는 배경 장식 */}
 				<motion.div
 					style={{ y: featuresY, opacity: featuresOpacity }}
@@ -501,11 +469,10 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						className="text-center"
 					>
 						<h2 className="text-4xl font-bold text-text-primary sm:text-5xl">
-							강력한 기능으로{" "}
-							<span className="gradient-text">완성하는 커뮤니티</span>
+							<span className="gradient-text">실시간 커뮤니티</span>를 위한 기술
 						</h2>
 						<p className="mt-6 text-lg text-text-secondary">
-							모던 웹 기술로 만든 빠르고 편리한 게시판 경험
+							즉각적인 피드백과 부드러운 사용 경험
 						</p>
 					</motion.div>
 					<motion.div
@@ -520,50 +487,47 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								id: "realtime-notifications",
 								emoji: "⚡",
 								title: "실시간 알림",
-								desc: "SSE 기반 실시간 알림으로 새 게시글과 댓글을 즉시 확인하세요.",
+								desc: "SSE로 구현한 서버 푸시 알림. 새 글과 댓글이 등록되면 즉시 확인할 수 있어요.",
 							},
 							{
-								id: "smart-search",
-								emoji: "🔍",
-								title: "스마트 검색",
-								desc: "태그와 키워드로 원하는 게시글을 빠르게 찾아보세요.",
+								id: "timeline-feed",
+								emoji: "📍",
+								title: "타임라인 피드",
+								desc: "시간 순서로 배열된 학습 기록. NEW 배지로 최신 글을 한눈에 파악하세요.",
 							},
 							{
-								id: "intuitive-editor",
-								emoji: "📝",
-								title: "직관적 에디터",
-								desc: "마크다운 지원으로 아름다운 글을 쉽게 작성할 수 있어요.",
+								id: "react-query",
+								emoji: "🔄",
+								title: "자동 캐시 무효화",
+								desc: "React Query로 데이터 변경 시 자동으로 최신 상태를 반영합니다.",
 							},
 							{
-								id: "tag-system",
+								id: "tag-curation",
 								emoji: "🏷️",
-								title: "태그 시스템",
-								desc: "관심사별로 태그를 등록하고 맞춤 콘텐츠를 큐레이션하세요.",
+								title: "태그 큐레이션",
+								desc: "사이드바에서 주제별로 필터링. 관심 있는 학습 내용만 모아 보세요.",
 							},
 							{
-								id: "active-discussion",
-								emoji: "💬",
-								title: "활발한 토론",
-								desc: "댓글과 대댓글로 깊이 있는 대화를 이어가세요.",
+								id: "optimistic-ui",
+								emoji: "🚀",
+								title: "낙관적 업데이트",
+								desc: "글 작성 시 즉시 화면에 반영. 기다림 없는 빠른 경험을 제공합니다.",
 							},
 							{
-								id: "stats-dashboard",
-								emoji: "📊",
-								title: "통계 대시보드",
-								desc: "내 활동을 한눈에 확인하고 인사이트를 얻어보세요.",
+								id: "ssr-hydration",
+								emoji: "⚙️",
+								title: "SSR + CSR 하이브리드",
+								desc: "서버 렌더링으로 빠른 초기 로딩, 클라이언트 렌더링으로 부드러운 인터랙션.",
 							},
 						].map((feature) => (
 							<motion.div
 								key={feature.id}
 								variants={scaleIn}
-								
-								
 								className="feature-card cursor-default"
 							>
 								<motion.div
 									className="text-4xl mb-4"
 									whileHover={{ scale: 1.1, rotate: 8 }}
-									
 								>
 									{feature.emoji}
 								</motion.div>
@@ -591,31 +555,31 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 								variants={fadeInUp}
 								className="text-4xl font-bold text-text-primary sm:text-5xl"
 							>
-								함께 성장하는
+								실시간으로 연결되는
 								<br />
-								<span className="gradient-text">개발자 커뮤니티</span>
+								<span className="gradient-text">학습 커뮤니티</span>
 							</motion.h2>
 							<motion.p
 								variants={fadeInUp}
 								className="mt-6 text-lg text-text-secondary leading-relaxed"
 							>
-								Sub Board는 개발자들이 지식을 공유하고 함께 성장하는 공간입니다.
-								코드 스니펫부터 기술 블로그, 프로젝트 경험담까지 다양한 주제로
-								소통할 수 있어요.
+								Sub Board는 배움을 기록하고 공유하는 실시간 플랫폼입니다. 새
+								글이 올라오면 바로 알림을 받고, 댓글로 즉각 피드백을 나눌 수
+								있어요.
 							</motion.p>
 							<motion.ul variants={staggerContainer} className="mt-8 space-y-4">
 								{[
 									{
 										id: "tech-stack",
-										text: "Next.js 15와 React Query로 구현한 최신 아키텍처",
+										text: "Next.js 15 App Router + React Query로 구현한 현대적 아키텍처",
 									},
 									{
-										id: "design",
-										text: "글래스모피즘 디자인과 부드러운 애니메이션",
+										id: "realtime",
+										text: "SSE (Server-Sent Events) 기반 실시간 알림 시스템",
 									},
 									{
-										id: "rendering",
-										text: "SSR/CSR 하이브리드 렌더링으로 빠른 로딩 속도",
+										id: "ux",
+										text: "타임라인 UI와 낙관적 업데이트로 즉각적인 사용자 경험",
 									},
 								].map((item) => (
 									<motion.li
@@ -638,29 +602,27 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						>
 							{[
 								{
-									id: "clear-goal",
-									emoji: "🎯",
-									title: "명확한 목표",
-									desc: "지식 공유와 성장을 최우선으로 하는 커뮤니티",
+									id: "realtime-notifications",
+									emoji: "🔔",
+									title: "실시간 알림",
+									desc: "SSE로 새 글과 댓글을 즉시 확인할 수 있어요",
 								},
 								{
-									id: "respect-culture",
-									emoji: "🤝",
-									title: "존중하는 문화",
-									desc: "건설적인 피드백과 따뜻한 응원이 함께하는 공간",
+									id: "instant-feedback",
+									emoji: "⚡",
+									title: "즉각적인 피드백",
+									desc: "작성한 글에 바로 반응을 받고 토론할 수 있어요",
 								},
 								{
-									id: "continuous-growth",
-									emoji: "🚀",
-									title: "지속적 발전",
-									desc: "피드백을 반영하여 계속 진화하는 플랫폼",
+									id: "timeline-ui",
+									emoji: "📍",
+									title: "타임라인 UI",
+									desc: "시간 흐름에 따라 배움의 과정을 시각화합니다",
 								},
 							].map((value) => (
 								<motion.div
 									key={value.id}
 									variants={scaleIn}
-									
-									
 									className="surface-card p-6 cursor-default"
 								>
 									<div className="text-2xl mb-2">{value.emoji}</div>
@@ -696,39 +658,45 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						whileInView="visible"
 						viewport={{ once: true, amount: 0.3 }}
 						variants={staggerContainer}
-						className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+						className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
 					>
 						{[
 							{
-								id: "testimonial-junsu",
-								text: "실시간 알림 기능 덕분에 내 글에 달린 댓글을 바로 확인할 수 있어서 정말 편리해요. 소통이 훨씬 활발해졌습니다!",
-								author: "준수",
-								role: "프론트엔드 개발자",
-								initial: "J",
-								gradient: "from-brand to-accent-cyan",
+								id: "testimonial-hyunso",
+								text: "실시간 알림 기능이 정말 신기해요. 새 글이 올라오면 바로 토스트로 알려줘서 놓치지 않고 확인할 수 있어요!",
+								author: "현소",
+								role: "앱 개발자",
+								initial: "현",
+								gradient: "from-[#0a84ff] to-[#5ac8fa]",
 							},
 							{
-								id: "testimonial-minji",
-								text: "태그 시스템이 정말 유용해요. 관심 있는 주제만 모아서 볼 수 있어서 시간을 효율적으로 사용할 수 있습니다.",
-								author: "민지",
+								id: "testimonial-hyungwook",
+								text: "SSE로 구현한 실시간 알림 시스템이 인상적이에요. NestJS와 잘 통합되어 있어서 백엔드 관점에서도 훌륭해요.",
+								author: "형욱",
 								role: "백엔드 개발자",
-								initial: "M",
-								gradient: "from-accent-cyan to-brand",
+								initial: "형",
+								gradient: "from-[#0a84ff] to-[#5ac8fa]",
 							},
 							{
-								id: "testimonial-hyunwoo",
-								text: "UI가 정말 아름답고 사용하기 편해요. 글 작성하는 게 즐거워졌어요. 디자인과 성능 모두 만족스럽습니다!",
-								author: "현우",
+								id: "testimonial-hyungho",
+								text: "글을 작성하면 즉시 화면에 반영되는 게 놀라워요. React Query의 낙관적 업데이트가 정말 매끄럽게 동작하네요!",
+								author: "형호",
 								role: "풀스택 개발자",
-								initial: "H",
-								gradient: "from-brand to-accent-pink",
+								initial: "호",
+								gradient: "from-[#0a84ff] to-[#5ac8fa]",
+							},
+							{
+								id: "testimonial-eunbi",
+								text: "타임라인 UI가 직관적이에요. 시간 순서대로 글이 쌓여서 학습 과정을 한눈에 볼 수 있는 점이 마음에 들어요.",
+								author: "은비",
+								role: "AI 개발자",
+								initial: "은",
+								gradient: "from-[#0a84ff] to-[#5ac8fa]",
 							},
 						].map((testimonial) => (
 							<motion.div
 								key={testimonial.id}
 								variants={scaleIn}
-								
-								
 								className="testimonial-card cursor-default"
 							>
 								<p className="text-text-secondary italic">
@@ -770,30 +738,29 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 							variants={fadeInUp}
 							className="text-4xl font-bold text-text-primary sm:text-5xl"
 						>
-							지금 바로 <span className="gradient-text">시작하세요</span>
+							실시간 학습 커뮤니티를{" "}
+							<span className="gradient-text">경험하세요</span>
 						</motion.h2>
 						<motion.p
 							variants={fadeInUp}
 							className="mt-6 text-lg text-text-secondary"
 						>
-							Sub Board와 함께 지식을 공유하고 성장하는 여정을 시작해보세요.
+							새 글이 올라오면 즉시 알림을 받고, 댓글로 실시간 피드백을
+							주고받으세요.
 							<br />
-							가입은 무료이며, 몇 초면 완료됩니다.
+							타임라인 피드에서 배움의 흐름을 한눈에 확인할 수 있어요.
 						</motion.p>
 						<motion.div
 							variants={fadeInUp}
 							className="mt-10 flex flex-wrap justify-center gap-4"
 						>
 							{hasHydrated ? (
-								<motion.div
-									
-									whileTap={{ scale: 0.95 }}
-								>
+								<motion.div whileTap={{ scale: 0.95 }}>
 									<Link
 										href="/register"
 										className="btn-gradient text-base px-8 py-3"
 									>
-										회원가입하고 시작하기
+										가입하고 시작하기
 									</Link>
 								</motion.div>
 							) : (
@@ -801,15 +768,12 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 									className="btn-gradient text-base px-8 py-3 invisible pointer-events-none select-none"
 									aria-hidden="true"
 								>
-									회원가입하고 시작하기
+									가입하고 시작하기
 								</span>
 							)}
-							<motion.div  whileTap={{ scale: 0.95 }}>
-								<Link
-									href="/posts"
-									className="btn-outline text-base px-8 py-3"
-								>
-									게시글 먼저 둘러보기
+							<motion.div whileTap={{ scale: 0.95 }}>
+								<Link href="/posts" className="btn-outline text-base px-8 py-3">
+									라이브 피드 둘러보기
 								</Link>
 							</motion.div>
 						</motion.div>
@@ -819,29 +783,23 @@ export function HomePageClient({ initialUser, initialStats }: Props) {
 						whileInView="visible"
 						viewport={{ once: true, amount: 0.3 }}
 						variants={scaleIn}
-						
-						
 						className="mt-16 surface-card p-8 cursor-default"
 					>
 						<div className="grid gap-8 sm:grid-cols-3">
 							{[
 								{
-									id: "free",
-									label: "Free",
-									desc: "완전 무료로 제공되는 서비스",
+									id: "realtime",
+									label: "Real-time",
+									desc: "SSE 기반 실시간 알림",
 								},
-								{ id: "open", label: "Open", desc: "모두에게 열린 커뮤니티" },
+								{ id: "reactive", label: "Reactive", desc: "즉각적인 UI 반응" },
 								{
 									id: "modern",
 									label: "Modern",
-									desc: "최신 웹 기술로 구현",
+									desc: "최신 웹 기술 스택",
 								},
 							].map((item) => (
-								<motion.div
-									key={item.id}
-									
-									
-								>
+								<motion.div key={item.id}>
 									<div className="text-3xl font-bold text-brand">
 										{item.label}
 									</div>

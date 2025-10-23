@@ -11,9 +11,11 @@ async function main() {
 	await prisma.user.deleteMany();
 
 	const users = [
-		{ loginId: "jane", nickname: "제인", password: "Password123!" },
-		{ loginId: "tom", nickname: "탐", password: "Password123!" },
-		{ loginId: "sara", nickname: "사라", password: "Password123!" },
+		{ loginId: "jungsub", nickname: "중섭", password: "Password123!" },
+		{ loginId: "hyunso", nickname: "현소", password: "Password123!" },
+		{ loginId: "hyungwook", nickname: "형욱", password: "Password123!" },
+		{ loginId: "hyungho", nickname: "형호", password: "Password123!" },
+		{ loginId: "eunbi", nickname: "은비", password: "Password123!" },
 	];
 
 	console.log("👤 Creating users...");
